@@ -33,14 +33,15 @@
   button.ghost { font-size: .95rem; padding: 9px 14px; border-radius: 10px; border: 1px solid #55556a;
     background: transparent; color: inherit; cursor: pointer; margin-top: 10px; }
   #msg { margin-top: 12px; color: #f2c94c; min-height: 1.2em; }
-  #play { position: fixed; inset: 0; display: none; }
+  #play { position: fixed; inset: 0; display: none; z-index: 10; background: #0b0b10; }
   #pauseBtn { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
     font-size: 1.3rem; font-weight: 700; padding: 18px 46px; border-radius: 16px;
     border: 2px solid rgba(255,255,255,.6); background: rgba(0,0,0,.45); color: #fff; cursor: pointer; }
   #status { position: fixed; top: 14px; left: 16px; font-size: .9rem; color: rgba(255,255,255,.65); }
   #endBtn { position: fixed; top: 10px; right: 14px; margin: 0; background: rgba(0,0,0,.35); }
   #miniwrap { position: fixed; left: 16px; right: 16px; bottom: 8px; height: 6px; margin: 0; opacity: .5; }
-  #summary { display: none; max-width: 520px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+  #summary { display: none; position: fixed; inset: 0; z-index: 20; background: #0b0b10; padding: 60px 20px; text-align: center; overflow: auto; }
+  #hint { position: fixed; left: 0; right: 0; top: 42%; text-align: center; font-size: 1.2rem; color: rgba(255,255,255,.55); transition: opacity 1.5s; pointer-events: none; }
   #summary .n { font-size: 2.2rem; font-weight: 700; }
 </style>
 </head>
@@ -87,6 +88,7 @@
 
 <div id="play">
   <div id="status"></div>
+  <div id="hint">Waiting for movement...</div>
   <button class="ghost" id="endBtn">End session</button>
   <button id="pauseBtn">Pause</button>
   <div class="barwrap" id="miniwrap"><div class="bar" id="bar2"></div><div class="mark" id="mark2"></div></div>
@@ -256,6 +258,7 @@
     var target = (mode === "play" && isOn) ? 1 : 0;
     if (level < target) level = Math.min(target, level + dt / RISE_S);
     else if (level > target) level = Math.max(target, level - dt / (mode === "play" ? FALL_S : 1.0));
+    $("hint").style.opacity = (mode === "play" && !isOn && level < 0.05) ? 1 : 0;
     paint(); bars();
     requestAnimationFrame(loop);
   }
@@ -280,7 +283,9 @@
     triggers = 0; moveSecs = 0; isOn = false; lastMove = -1e9; above = 0;
     sessionEnd = performance.now() + (+$("len").value) * 60000;
     mode = "play";
-    $("setup").style.display = "none"; $("summary").style.display = "none"; $("play").style.display = "block";
+    $("summary").style.display = "none"; $("play").style.display = "block";
+    document.body.style.overflow = "hidden"; window.scrollTo(0, 0);
+    if (video.paused) { var pp = video.play(); if (pp && pp.catch) pp.catch(function () {}); }
     $("pauseBtn").textContent = "Pause";
     try { var p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
   }
@@ -306,7 +311,7 @@
   $("startBtn").onclick = start;
   $("pauseBtn").onclick = togglePause;
   $("endBtn").onclick = function () { if (mode === "play" || mode === "paused") finish(); };
-  $("againBtn").onclick = function () { mode = "setup"; $("summary").style.display = "none"; $("setup").style.display = "block"; };
+  $("againBtn").onclick = function () { mode = "setup"; $("summary").style.display = "none"; document.body.style.overflow = ""; };
   $("calBtn").onclick = function () { cal = { end: performance.now() + 10000, max: 0 }; };
   document.addEventListener("keydown", function (e) {
     if (e.code === "Space" && (mode === "play" || mode === "paused")) { e.preventDefault(); togglePause(); }
