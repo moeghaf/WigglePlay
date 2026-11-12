@@ -5,7 +5,7 @@
 
 Free games built for disabled children to interact with a screen through movement. Any movement in front of the camera brings up simple colour and sound.
 
-**Play:** https://moeghaf.github.io/WigglePlay/
+**Play:** https://wiggleplay.org/
 
 ![Dark screen fills with colour on movement, blends between colours, then fades out](docs/demo.gif)
 
@@ -15,18 +15,18 @@ Free games built for disabled children to interact with a screen through movemen
 
 | | Game | What happens |
 | --- | --- | --- |
-| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/WigglePlay/games/musical-colours/) | Any movement fills the screen with slowly blending colour and soft music. |
-| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://moeghaf.github.io/WigglePlay/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own little tune. |
-| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://moeghaf.github.io/WigglePlay/games/balloon-pop/) | Balloons float up the screen. Move to pop them, with a real pop and a shower of pieces. |
-| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://moeghaf.github.io/WigglePlay/games/music-wall/) | Move on one side of the screen to light that pad and play its note. |
-| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/WigglePlay/games/walking-animals/) | Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep. |
-| <img src="assets/screens/odd-one.png" width="160" alt=""> | [**Spot the Odd One**](https://moeghaf.github.io/WigglePlay/games/odd-one/) | Find the animal that is different from the others. |
-| <img src="assets/screens/shape-fit.png" width="160" alt=""> | [**Shape Fit**](https://moeghaf.github.io/WigglePlay/games/shape-fit/) | Pick the hole the shape fits and watch it glide into place. |
-| <img src="assets/screens/how-many.png" width="160" alt=""> | [**How Many?**](https://moeghaf.github.io/WigglePlay/games/how-many/) | Count the animals, then pick the matching number. |
-| <img src="assets/screens/find-the-pair.png" width="160" alt=""> | [**Find the Pair**](https://moeghaf.github.io/WigglePlay/games/find-the-pair/) | Turn over cards to find two animals the same. |
-| <img src="assets/screens/copy-the-tune.png" width="160" alt=""> | [**Copy the Tune**](https://moeghaf.github.io/WigglePlay/games/copy-the-tune/) | Watch the pads light up, then copy the tune. It grows one note at a time. |
-| <img src="assets/screens/star-pictures.png" width="160" alt=""> | [**Star Pictures**](https://moeghaf.github.io/WigglePlay/games/star-pictures/) | Light the stars in any order to draw a picture in the sky. |
-| <img src="assets/screens/colour-squares.png" width="160" alt=""> | [**Colour Squares**](https://moeghaf.github.io/WigglePlay/games/colour-squares/) | Pick a colour and fill the squares to make your own picture. |
+| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://wiggleplay.org/games/musical-colours/) | Any movement fills the screen with slowly blending colour and soft music. |
+| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://wiggleplay.org/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own little tune. |
+| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://wiggleplay.org/games/balloon-pop/) | Balloons float up the screen. Move to pop them, with a real pop and a shower of pieces. |
+| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://wiggleplay.org/games/music-wall/) | Move on one side of the screen to light that pad and play its note. |
+| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://wiggleplay.org/games/walking-animals/) | Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep. |
+| <img src="assets/screens/odd-one.png" width="160" alt=""> | [**Spot the Odd One**](https://wiggleplay.org/games/odd-one/) | Find the animal that is different from the others. |
+| <img src="assets/screens/shape-fit.png" width="160" alt=""> | [**Shape Fit**](https://wiggleplay.org/games/shape-fit/) | Pick the hole the shape fits and watch it glide into place. |
+| <img src="assets/screens/how-many.png" width="160" alt=""> | [**How Many?**](https://wiggleplay.org/games/how-many/) | Count the animals, then pick the matching number. |
+| <img src="assets/screens/find-the-pair.png" width="160" alt=""> | [**Find the Pair**](https://wiggleplay.org/games/find-the-pair/) | Turn over cards to find two animals the same. |
+| <img src="assets/screens/copy-the-tune.png" width="160" alt=""> | [**Copy the Tune**](https://wiggleplay.org/games/copy-the-tune/) | Watch the pads light up, then copy the tune. It grows one note at a time. |
+| <img src="assets/screens/star-pictures.png" width="160" alt=""> | [**Star Pictures**](https://wiggleplay.org/games/star-pictures/) | Light the stars in any order to draw a picture in the sky. |
+| <img src="assets/screens/colour-squares.png" width="160" alt=""> | [**Colour Squares**](https://wiggleplay.org/games/colour-squares/) | Pick a colour and fill the squares to make your own picture. |
 
 More to come.
 
