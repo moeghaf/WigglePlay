@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Camera Toy - Stage 1</title>
+<title>Camera Toy</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: #0b0b10; color: #e8e8ee;
@@ -49,13 +49,13 @@
 
 <div id="setup">
   <h1>Camera Toy</h1>
-  <p class="sub">Stage 1: any movement in the dashed box brings up colour and music. Video stays on this laptop and is never saved.</p>
+  <p class="sub">Any movement in the dashed box brings up gentle colour and music. Video stays on this device and is never saved.</p>
   <div class="grid">
     <div>
       <div class="camwrap"><video id="video" autoplay playsinline muted></video><div class="zone"></div></div>
       <div class="barwrap"><div class="bar" id="bar"></div><div class="mark" id="mark"></div></div>
       <div class="hint">Green bar = movement now. White line = how much movement is needed.</div>
-      <button class="ghost" id="calBtn">Calibrate while she rests (10 s)</button>
+      <button class="ghost" id="calBtn">Calibrate at rest (10 s)</button>
       <div id="msg"></div>
     </div>
     <div>
