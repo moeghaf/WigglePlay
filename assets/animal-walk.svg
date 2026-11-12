@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170"><ellipse cx="100" cy="160" rx="64" ry="8" fill="#000" opacity="0.18"></ellipse><g class="legB"><ellipse cx="70" cy="148" rx="17" ry="9" fill="#e4e4ea"></ellipse></g>
+     <g class="legA"><ellipse cx="128" cy="148" rx="14" ry="9" fill="#e4e4ea"></ellipse></g>
+     <circle cx="38" cy="112" r="13" fill="#ffffff"></circle>
+     <ellipse cx="92" cy="110" rx="56" ry="40" fill="#f7f7fa"></ellipse>
+     <ellipse cx="136" cy="32" rx="10" ry="30" fill="#f7f7fa" transform="rotate(-8 136 32)"></ellipse>
+     <ellipse cx="136" cy="34" rx="5" ry="20" fill="#f6b3c6" transform="rotate(-8 136 34)"></ellipse>
+     <ellipse cx="160" cy="36" rx="10" ry="30" fill="#f7f7fa" transform="rotate(14 160 36)"></ellipse>
+     <ellipse cx="160" cy="38" rx="5" ry="20" fill="#f6b3c6" transform="rotate(14 160 38)"></ellipse>
+     <circle cx="148" cy="80" r="32" fill="#f7f7fa"></circle>
+     <circle cx="150" cy="94" r="7" fill="#f9cdd8" opacity="0.8"></circle>
+     <circle cx="178" cy="86" r="4.5" fill="#ee7f9d"></circle><circle cx="160" cy="76" r="5.5" fill="#1d1d24"></circle></svg>

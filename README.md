@@ -16,6 +16,7 @@ Free games built for disabled children to interact with a screen through movemen
 | Game | What happens | Play |
 | --- | --- | --- |
 | **Colours** | Movement fills the screen with slowly blending colour and gentle music | [Open](https://moeghaf.github.io/camera-toy/games/colours/) |
+| **Animal Walk** | An animal walks towards the side the child looks at, and sleeps when their eyes close | [Open](https://moeghaf.github.io/camera-toy/games/animal-walk/) |
 
 More to come.
 
@@ -29,7 +30,7 @@ You could even try vibe coding a game yourself. It is very easy to do:
 2. Ask an AI coding assistant to change what happens on movement.
 3. Add your game to the list on `index.html` and in this README.
 
-`shared/motion.js` handles the camera and movement detection for every game.
+`shared/motion.js` detects movement and `shared/face.js` tracks head turns, eye direction and eye closing, for any game to use.
 
 ## Gentle and private
 

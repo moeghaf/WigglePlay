@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animal Walk - WigglePlay</title>
+<meta name="description" content="Animal Walk: a camera game for disabled children. A friendly animal walks towards wherever the child looks.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0b0b10; color: #e8e8ee;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #setup { max-width: 760px; margin: 0 auto; padding: 24px 20px 40px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  p.sub { margin: 0 0 18px; color: #a9a9b8; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
+  .camwrap { position: relative; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; }
+  video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+  .barwrap { position: relative; height: 18px; background: #23232e; border-radius: 9px; margin-top: 10px; overflow: hidden; }
+  .zone { position: absolute; top: 0; bottom: 0; left: 35%; width: 30%; background: #34344a; }
+  .dot { position: absolute; top: 2px; width: 14px; height: 14px; margin-left: -7px; left: 50%; border-radius: 50%; background: #6fcf97; }
+  label, .label { display: block; margin: 14px 0 6px; font-weight: 600; }
+  .hint { font-size: .85rem; color: #a9a9b8; margin-top: 4px; }
+  input[type=range] { width: 100%; }
+  select { width: 100%; padding: 8px; border-radius: 8px; background: #23232e; color: inherit; border: 1px solid #3a3a48; font-size: 1rem; }
+  .animals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pick { background: #3b9a57; border: 3px solid transparent; border-radius: 12px; padding: 6px 2px 4px; cursor: pointer; color: #fff; font-size: .85rem; font-weight: 600; }
+  .pick svg { width: 100%; height: auto; display: block; }
+  .pick[aria-pressed=true] { border-color: #fff; }
+  button.main { font-size: 1.1rem; font-weight: 700; padding: 14px 22px; border-radius: 12px; border: 0;
+    background: #6fcf97; color: #0b0b10; cursor: pointer; margin-top: 20px; width: 100%; }
+  button.main:disabled { opacity: .5; cursor: default; }
+  button.ghost { font-size: .95rem; padding: 9px 14px; border-radius: 10px; border: 1px solid #55556a;
+    background: transparent; color: inherit; cursor: pointer; margin-top: 10px; }
+  #msg { margin-top: 12px; color: #f2c94c; min-height: 1.2em; }
+  #play { position: fixed; inset: 0; display: none; z-index: 10; background: #3b9a57; overflow: hidden; }
+  #ground { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: #2e7d46; }
+  #shade { position: absolute; inset: 0; background: #0b1a10; opacity: 0; pointer-events: none; }
+  #animal { position: absolute; bottom: 20%; left: 50%; width: 30vmin; margin-left: -15vmin; will-change: transform; }
+  #animal svg { width: 100%; height: auto; display: block; }
+  #pauseBtn { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 12;
+    font-size: 1.3rem; font-weight: 700; padding: 16px 44px; border-radius: 16px;
+    border: 2px solid rgba(255,255,255,.7); background: rgba(0,0,0,.45); color: #fff; cursor: pointer; }
+  #status { position: fixed; top: 14px; left: 16px; z-index: 12; font-size: .9rem; color: rgba(255,255,255,.85); }
+  #endBtn { position: fixed; top: 10px; right: 14px; margin: 0; z-index: 12; background: rgba(0,0,0,.35); color: #fff; border-color: rgba(255,255,255,.6); }
+  #hint { position: fixed; left: 0; right: 0; top: 14%; z-index: 11; text-align: center; font-size: 1.2rem; color: rgba(255,255,255,.9); transition: opacity 1.2s; pointer-events: none; }
+  #summary { display: none; position: fixed; inset: 0; z-index: 20; background: #0b0b10; padding: 50px 20px; text-align: center; overflow: auto; }
+  #summary .n { font-size: 2.2rem; font-weight: 700; }
+  #summary .row { display: flex; justify-content: center; gap: 40px; margin: 18px 0; }
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <p style="margin:0 0 10px"><a href="../../" style="color:#a9a9b8">&larr; All games</a></p>
+  <h1>Animal Walk</h1>
+  <p class="sub">The animal walks towards the side the child looks at, using head and eyes together. Close eyes for a moment and it falls asleep. Video stays on this device and is never saved.</p>
+  <div class="grid">
+    <div>
+      <div class="camwrap"><video id="video" autoplay playsinline muted></video></div>
+      <div class="barwrap"><div class="zone"></div><div class="dot" id="dot"></div></div>
+      <div class="hint">The dot shows where the child is looking. Outside the middle band, the animal walks.</div>
+      <button class="ghost" id="centreBtn">Set the middle (look at the screen for 2 s)</button>
+      <div id="msg">Loading face tracking...</div>
+    </div>
+    <div>
+      <span class="label" id="animalLabel">Animal</span>
+      <div class="animals" id="animals" role="group" aria-labelledby="animalLabel"></div>
+
+      <label for="sens">How far to look</label>
+      <input type="range" id="sens" min="0" max="100" value="50">
+      <div class="hint">Left = a big look or turn is needed. Right = a small look is enough.</div>
+
+      <label for="vol">Maximum volume</label>
+      <input type="range" id="vol" min="0" max="100" value="50">
+
+      <label for="len">Session length</label>
+      <select id="len">
+        <option value="2">2 minutes</option>
+        <option value="3" selected>3 minutes</option>
+        <option value="5">5 minutes</option>
+        <option value="10">10 minutes</option>
+      </select>
+
+      <label style="font-weight:400"><input type="checkbox" id="flip"> Swap left and right</label>
+
+      <button class="main" id="startBtn" disabled>Start</button>
+      <div class="hint">Space pauses. Arrow keys also move the animal, for trying it out.</div>
+    </div>
+  </div>
+</div>
+
+<div id="play">
+  <div id="ground"></div>
+  <div id="animal"></div>
+  <div id="shade"></div>
+  <div id="status"></div>
+  <div id="hint"></div>
+  <button class="ghost" id="endBtn">End session</button>
+  <button id="pauseBtn">Pause</button>
+</div>
+
+<div id="summary">
+  <h1>Session finished</h1>
+  <div class="row">
+    <p><span class="n" id="sLeft">0</span><br>walks to the left</p>
+    <p><span class="n" id="sRight">0</span><br>walks to the right</p>
+  </div>
+  <div class="row">
+    <p><span class="n" id="tLeft">0</span><br>seconds looking left</p>
+    <p><span class="n" id="tRight">0</span><br>seconds looking right</p>
+  </div>
+  <button class="main" id="againBtn" style="max-width:320px">Back to settings</button>
+</div>
+
+<script type="module">
+import { createFaceTracker } from "../../shared/face.js";
+
+const $ = (id) => document.getElementById(id);
+const video = $("video");
+
+// ---------- animals (all drawn facing right) ----------
+const EYE = (x, y) =>
+  `<circle class="eye-open" cx="${x}" cy="${y}" r="5.5" fill="#1d1d24"></circle>` +
+  `<path class="eye-closed" d="M${x - 7} ${y} q7 6 14 0" fill="none" stroke="#1d1d24" stroke-width="3.5" stroke-linecap="round" style="display:none"></path>`;
+const SHADOW = `<ellipse cx="100" cy="160" rx="64" ry="8" fill="#000" opacity="0.18"></ellipse>`;
+const ANIMALS = {
+  bunny: { name: "Bunny", notes: [523.25, 659.25, 783.99], art:
+    `<g class="legB"><ellipse cx="70" cy="148" rx="17" ry="9" fill="#e4e4ea"></ellipse></g>
+     <g class="legA"><ellipse cx="128" cy="148" rx="14" ry="9" fill="#e4e4ea"></ellipse></g>
+     <circle cx="38" cy="112" r="13" fill="#ffffff"></circle>
+     <ellipse cx="92" cy="110" rx="56" ry="40" fill="#f7f7fa"></ellipse>
+     <ellipse cx="136" cy="32" rx="10" ry="30" fill="#f7f7fa" transform="rotate(-8 136 32)"></ellipse>
+     <ellipse cx="136" cy="34" rx="5" ry="20" fill="#f6b3c6" transform="rotate(-8 136 34)"></ellipse>
+     <ellipse cx="160" cy="36" rx="10" ry="30" fill="#f7f7fa" transform="rotate(14 160 36)"></ellipse>
+     <ellipse cx="160" cy="38" rx="5" ry="20" fill="#f6b3c6" transform="rotate(14 160 38)"></ellipse>
+     <circle cx="148" cy="80" r="32" fill="#f7f7fa"></circle>
+     <circle cx="150" cy="94" r="7" fill="#f9cdd8" opacity="0.8"></circle>
+     <circle cx="178" cy="86" r="4.5" fill="#ee7f9d"></circle>` + EYE(160, 76) },
+  cat: { name: "Cat", notes: [440, 554.37, 659.25], art:
+    `<path d="M42 112 C 10 104, 12 62, 34 56" fill="none" stroke="#f39a3d" stroke-width="13" stroke-linecap="round"></path>
+     <g class="legB"><ellipse cx="68" cy="146" rx="11" ry="13" fill="#e2852a"></ellipse></g>
+     <g class="legA"><ellipse cx="124" cy="146" rx="11" ry="13" fill="#e2852a"></ellipse></g>
+     <ellipse cx="92" cy="108" rx="54" ry="36" fill="#f39a3d"></ellipse>
+     <polygon points="124,62 128,28 150,52" fill="#f39a3d" stroke="#f39a3d" stroke-width="6" stroke-linejoin="round"></polygon>
+     <polygon points="152,52 172,30 174,64" fill="#f39a3d" stroke="#f39a3d" stroke-width="6" stroke-linejoin="round"></polygon>
+     <circle cx="148" cy="82" r="32" fill="#f39a3d"></circle>
+     <ellipse cx="166" cy="94" rx="15" ry="11" fill="#fde3c4"></ellipse>
+     <circle cx="177" cy="88" r="4" fill="#d9577a"></circle>` + EYE(158, 76) },
+  duck: { name: "Duck", notes: [587.33, 739.99, 880], art:
+    `<g class="legB"><ellipse cx="82" cy="151" rx="12" ry="6" fill="#f08a24"></ellipse></g>
+     <g class="legA"><ellipse cx="112" cy="151" rx="12" ry="6" fill="#f08a24"></ellipse></g>
+     <polygon points="44,104 20,84 50,90" fill="#ffd84d" stroke="#ffd84d" stroke-width="6" stroke-linejoin="round"></polygon>
+     <ellipse cx="92" cy="114" rx="54" ry="34" fill="#ffd84d"></ellipse>
+     <ellipse cx="84" cy="114" rx="27" ry="18" fill="#f2c02a"></ellipse>
+     <circle cx="146" cy="72" r="29" fill="#ffd84d"></circle>
+     <ellipse cx="179" cy="79" rx="17" ry="8" fill="#f08a24"></ellipse>` + EYE(155, 66) },
+  puppy: { name: "Puppy", notes: [392, 493.88, 587.33], art:
+    `<path d="M42 102 C 22 92, 20 70, 30 60" fill="none" stroke="#b9783f" stroke-width="11" stroke-linecap="round"></path>
+     <g class="legB"><ellipse cx="68" cy="146" rx="11" ry="13" fill="#9f632d"></ellipse></g>
+     <g class="legA"><ellipse cx="124" cy="146" rx="11" ry="13" fill="#9f632d"></ellipse></g>
+     <ellipse cx="92" cy="108" rx="54" ry="36" fill="#b9783f"></ellipse>
+     <circle cx="148" cy="82" r="32" fill="#b9783f"></circle>
+     <ellipse cx="128" cy="78" rx="12" ry="25" fill="#7a481d" transform="rotate(18 128 78)"></ellipse>
+     <ellipse cx="168" cy="94" rx="16" ry="12" fill="#ecd3b3"></ellipse>
+     <circle cx="181" cy="88" r="5.5" fill="#2a1a10"></circle>` + EYE(158, 74) }
+};
+const svgFor = (key) => `<svg viewBox="0 0 200 170" role="img" aria-label="${ANIMALS[key].name}">${SHADOW}<g class="body">${ANIMALS[key].art}</g></svg>`;
+let animalKey = "bunny";
+for (const key of Object.keys(ANIMALS)) {
+  const b = document.createElement("button");
+  b.className = "pick"; b.innerHTML = svgFor(key) + ANIMALS[key].name;
+  b.setAttribute("aria-pressed", key === animalKey ? "true" : "false");
+  b.onclick = () => {
+    animalKey = key;
+    document.querySelectorAll(".pick").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
+  };
+  $("animals").appendChild(b);
+}
+
+// ---------- settings ----------
+const DEAD = 0.3;              // inside this band the animal rests
+const HOLD_EDGE = 0.18;        // the animal must come this far back from an edge before the next reward
+const SLEEP_AFTER_S = 1.2;     // eyes closed this long = asleep
+const X_MIN = 0.12, X_MAX = 0.88;
+const gain = () => 0.5 * Math.pow(4, $("sens").value / 100);   // 0.5x to 2x
+
+// ---------- state ----------
+let tracker = null, face = { present: false, head: 0, eyes: 0, closed: 0 };
+let base = { head: 0, eyes: 0 }, centring = null, msgHold = 0;
+let mode = "setup";            // setup | play | paused | done
+let dir = 0, x = 0.5, facing = 1, bob = 0, stepT = 0, stepFlip = false, hopT = -1;
+let closedFor = 0, openFor = 0, asleep = false, shade = 0;
+let armedLeft = true, armedRight = true;
+let trips = { left: 0, right: 0 }, look = { left: 0, right: 0 };
+let sessionEnd = 0, pausedLeft = 0, lastT = performance.now();
+const keys = { left: false, right: false };
+
+// ---------- camera ----------
+function startCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    $("msg").textContent = "This browser cannot use the camera here. Open the page in Chrome, Edge or Safari over https.";
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false })
+    .then((stream) => { video.srcObject = stream; })
+    .catch(() => { $("msg").textContent = "Camera blocked. Allow camera access for this page, then reload."; });
+}
+
+// ---------- sound (generated, no files) ----------
+let audio = null;
+function initAudio() {
+  if (audio) { audio.ctx.resume(); return; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  const ctx = new AC(), master = ctx.createGain(), lp = ctx.createBiquadFilter();
+  lp.type = "lowpass"; lp.frequency.value = 1800;
+  lp.connect(master); master.connect(ctx.destination);
+  audio = { ctx, master, lp };
+  setVolume();
+}
+function setVolume() { if (audio) audio.master.gain.value = 0.9 * ($("vol").value / 100); }
+function note(freq, when, peak, len) {
+  if (!audio) return;
+  const t = audio.ctx.currentTime + when, o = audio.ctx.createOscillator(), g = audio.ctx.createGain();
+  o.type = "triangle"; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(peak, t + 0.06);
+  g.gain.exponentialRampToValueAtTime(0.001, t + len);
+  o.connect(g); g.connect(audio.lp); o.start(t); o.stop(t + len + 0.05);
+}
+const stepSound = () => { const n = ANIMALS[animalKey].notes; note(n[stepFlip ? 0 : 1] / 2, 0, 0.10, 0.5); };
+const rewardSound = () => { const n = ANIMALS[animalKey].notes; note(n[0], 0, 0.16, 1.2); note(n[1], 0.22, 0.16, 1.2); note(n[2], 0.44, 0.18, 1.8); };
+const sleepSound = () => { const n = ANIMALS[animalKey].notes; note(n[1] / 2, 0, 0.10, 1.6); note(n[0] / 2, 0.5, 0.10, 2.2); };
+const wakeSound = () => { const n = ANIMALS[animalKey].notes; note(n[0], 0, 0.12, 0.9); note(n[1], 0.2, 0.12, 1.2); };
+
+// ---------- looking direction ----------
+function lookingDirection(dt) {
+  let raw = 0;
+  if (face.present) {
+    const h = (face.head - base.head) / 0.10, e = (face.eyes - base.eyes) / 0.35;
+    raw = (0.65 * h + 0.65 * e) * gain();
+    if ($("flip").checked) raw = -raw;
+  }
+  if (keys.left) raw = -1;
+  if (keys.right) raw = 1;
+  raw = Math.max(-1, Math.min(1, raw));
+  dir += (raw - dir) * Math.min(1, dt * 6);
+  return dir;
+}
+
+// ---------- drawing ----------
+function setEyes(closed) {
+  $("animal").querySelectorAll(".eye-open").forEach((el) => { el.style.display = closed ? "none" : ""; });
+  $("animal").querySelectorAll(".eye-closed").forEach((el) => { el.style.display = closed ? "" : "none"; });
+}
+function draw() {
+  const el = $("animal"), w = window.innerWidth;
+  let lift = 0;
+  if (hopT >= 0) { const k = hopT / 0.9; lift = -Math.sin(Math.PI * k) * el.offsetWidth * 0.22; }
+  el.style.transform = `translate(${(x - 0.5) * w}px, ${lift + bob}px) scaleX(${facing})`;
+  const a = el.querySelector(".legA"), b = el.querySelector(".legB");
+  if (a && b) {
+    a.setAttribute("transform", `translate(0 ${stepFlip ? -5 : 0})`);
+    b.setAttribute("transform", `translate(0 ${stepFlip ? 0 : -5})`);
+  }
+  $("shade").style.opacity = (shade * 0.45).toFixed(3);
+}
+
+// ---------- main loop ----------
+function loop(now) {
+  const dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+  if (tracker) face = tracker.read();
+  const d = lookingDirection(dt);
+  $("dot").style.left = (50 + d * 50) + "%";
+
+  if (centring) {
+    if (face.present) { centring.head += face.head; centring.eyes += face.eyes; centring.n++; }
+    const left = Math.ceil((centring.end - now) / 1000);
+    if (left <= 0) {
+      if (centring.n > 10) { base = { head: centring.head / centring.n, eyes: centring.eyes / centring.n }; $("msg").textContent = "Middle set."; }
+      else $("msg").textContent = "No face found. Check the camera view and try again.";
+      centring = null; msgHold = now + 2500;
+    } else $("msg").textContent = "Look at the middle of the screen... " + left + " s";
+  } else if (mode === "setup" && tracker && now > msgHold) {
+    $("msg").textContent = face.present ? "Face found." : "Looking for a face...";
+  }
+
+  if (mode === "play") {
+    // sleep and wake
+    const manual = keys.left || keys.right;
+    if (face.present && face.closed > 0.55 && !manual) { closedFor += dt; openFor = 0; }
+    else if (!face.present || face.closed < 0.35 || manual) { openFor += dt; closedFor = 0; }
+    if (!asleep && closedFor > SLEEP_AFTER_S) { asleep = true; setEyes(true); sleepSound(); }
+    if (asleep && openFor > 0.3) { asleep = false; setEyes(false); wakeSound(); }
+    shade += ((asleep ? 1 : 0) - shade) * Math.min(1, dt * 1.2);
+
+    // walking
+    let moving = false;
+    if (!asleep && hopT < 0 && Math.abs(d) > DEAD) {
+      const s = Math.sign(d), amount = (Math.abs(d) - DEAD) / (1 - DEAD);
+      x += s * (0.04 + 0.10 * amount) * dt;
+      facing = s;
+      moving = true;
+      if (s < 0) look.left += dt; else look.right += dt;
+    }
+    x = Math.max(X_MIN, Math.min(X_MAX, x));
+    if (x > X_MIN + HOLD_EDGE) armedLeft = true;
+    if (x < X_MAX - HOLD_EDGE) armedRight = true;
+    if (x <= X_MIN && armedLeft) { armedLeft = false; trips.left++; hopT = 0; rewardSound(); }
+    if (x >= X_MAX && armedRight) { armedRight = false; trips.right++; hopT = 0; rewardSound(); }
+    if (hopT >= 0) { hopT += dt; if (hopT > 0.9) hopT = -1; }
+
+    if (moving && x > X_MIN && x < X_MAX) {
+      stepT += dt;
+      if (stepT > 0.38) { stepT = 0; stepFlip = !stepFlip; stepSound(); }
+      bob = Math.sin(now / 120) * 3;
+    } else bob *= 0.9;
+
+    const waiting = !face.present && !manual;
+    $("hint").textContent = waiting ? "Looking for a face..." : "";
+    const left2 = Math.max(0, sessionEnd - now);
+    $("status").textContent = Math.floor(left2 / 60000) + ":" + ("0" + Math.floor(left2 / 1000) % 60).slice(-2) + " left";
+    if (left2 <= 0) finish();
+  }
+  if (mode !== "setup") draw();
+  requestAnimationFrame(loop);
+}
+
+// ---------- keep the screen awake during a session ----------
+let wake = null;
+function keepAwake() { if ("wakeLock" in navigator) navigator.wakeLock.request("screen").then((w) => { wake = w; }).catch(() => {}); }
+function letSleep() { if (wake) { try { wake.release(); } catch (e) {} wake = null; } }
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && (mode === "play" || mode === "paused")) keepAwake();
+});
+
+// ---------- controls ----------
+function start() {
+  initAudio(); setVolume(); keepAwake();
+  $("animal").innerHTML = svgFor(animalKey);
+  x = 0.5; facing = 1; dir = 0; hopT = -1; asleep = false; shade = 0; closedFor = 0; openFor = 0;
+  armedLeft = armedRight = true; trips = { left: 0, right: 0 }; look = { left: 0, right: 0 };
+  sessionEnd = performance.now() + (+$("len").value) * 60000;
+  mode = "play";
+  $("summary").style.display = "none"; $("play").style.display = "block";
+  document.body.style.overflow = "hidden"; window.scrollTo(0, 0);
+  $("pauseBtn").textContent = "Pause";
+  if (video.paused) { const p = video.play(); if (p && p.catch) p.catch(() => {}); }
+  try { const p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+}
+function togglePause() {
+  if (mode === "play") {
+    mode = "paused"; pausedLeft = sessionEnd - performance.now();
+    $("pauseBtn").textContent = "Resume"; $("status").textContent = "Paused"; $("hint").textContent = "";
+  } else if (mode === "paused") {
+    sessionEnd = performance.now() + pausedLeft; closedFor = 0;
+    mode = "play"; $("pauseBtn").textContent = "Pause";
+  }
+}
+function finish() {
+  mode = "done"; letSleep();
+  $("play").style.display = "none"; $("summary").style.display = "block";
+  $("sLeft").textContent = trips.left; $("sRight").textContent = trips.right;
+  $("tLeft").textContent = Math.round(look.left); $("tRight").textContent = Math.round(look.right);
+  try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {}
+}
+$("startBtn").onclick = start;
+$("pauseBtn").onclick = togglePause;
+$("endBtn").onclick = () => { if (mode === "play" || mode === "paused") finish(); };
+$("againBtn").onclick = () => { mode = "setup"; $("summary").style.display = "none"; document.body.style.overflow = ""; };
+$("centreBtn").onclick = () => { centring = { end: performance.now() + 2000, head: 0, eyes: 0, n: 0 }; };
+$("vol").oninput = setVolume;
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && (mode === "play" || mode === "paused")) { e.preventDefault(); togglePause(); }
+  if (e.code === "ArrowLeft") keys.left = true;
+  if (e.code === "ArrowRight") keys.right = true;
+});
+document.addEventListener("keyup", (e) => {
+  if (e.code === "ArrowLeft") keys.left = false;
+  if (e.code === "ArrowRight") keys.right = false;
+});
+window.__game = () => ({ mode, x, dir, trips, asleep, present: face.present });   // for automated checks
+
+startCamera();
+requestAnimationFrame(loop);
+$("startBtn").disabled = false;
+createFaceTracker(video)
+  .then((t) => { tracker = t; })
+  .catch(() => { $("msg").textContent = "Face tracking could not load on this device. Arrow keys still work."; });
+</script>
+</body>
+</html>

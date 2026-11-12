@@ -25,6 +25,8 @@
     color: inherit; text-decoration: none; }
   .card:hover, .card:focus { border-color: #8fd3ff; }
   .swatch { height: 110px; background: linear-gradient(90deg, #1b6f99, #1b9960, #99791b, #6a2b99, #994a1b); }
+  .swatch.meadow { background: linear-gradient(#3b9a57 0 70%, #2e7d46 70% 100%); display: flex; align-items: flex-end; justify-content: center; }
+  .swatch.meadow img { height: 92px; margin-bottom: 4px; }
   .card div.body { padding: 14px 16px 16px; }
   .card h3 { margin: 0 0 6px; font-size: 1.15rem; }
   .card p { margin: 0; color: #a9a9b8; font-size: .95rem; }
@@ -44,6 +46,10 @@
     <li><a class="card" href="games/colours/">
       <div class="swatch"></div>
       <div class="body"><h3>Colours</h3><p>Move to fill the screen with slowly blending colour and gentle music.</p></div>
+    </a></li>
+    <li><a class="card" href="games/animal-walk/">
+      <div class="swatch meadow"><img src="assets/animal-walk.svg" alt=""></div>
+      <div class="body"><h3>Animal Walk</h3><p>Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep.</p></div>
     </a></li>
     <li><div class="card soon"><div class="body"><h3>More coming</h3><p>Ask for a game for your child using the link below.</p></div></div></li>
   </ul>
