@@ -12,7 +12,7 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; background: #0b0b10; color: #e8e8ee;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 920px; margin: 0 auto; padding: 32px 20px 48px; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 48px; }
   h1 { margin: 0 0 12px; display: flex; align-items: center; gap: 14px; font: 600 2.6rem/1 Fredoka, system-ui, sans-serif; letter-spacing: -0.01em; }
   h1 img { width: 80px; height: 60px; }
   h1 .play { color: #3ddc97; }
@@ -21,15 +21,17 @@
   .lead { color: #c5c5d2; font-size: 1.1rem; max-width: 640px; }
   a { color: #8fd3ff; }
 
-  .games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 0; margin: 0; list-style: none; }
-  @media (max-width: 640px) { .games { grid-template-columns: 1fr; } }
+  .games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding: 0; margin: 0; list-style: none; }
+  @media (max-width: 900px) { .games { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .games { grid-template-columns: 1fr; } }
+  .group { color: #a9a9b8; margin: -6px 0 16px; max-width: 640px; }
   .card { display: flex; flex-direction: column; height: 100%; border-radius: 18px; overflow: hidden; background: #181822;
     border: 2px solid #2c2c3a; color: inherit; text-decoration: none; }
   .card:hover, .card:focus-visible { border-color: #3ddc97; outline: none; }
   .card img.shot { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: #23232e; }
   .card .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 auto; }
-  .card h3 { margin: 0; font: 600 1.45rem/1.15 Fredoka, system-ui, sans-serif; }
-  .card p { margin: 0; color: #b6b6c4; font-size: 1rem; }
+  .card h3 { margin: 0; font: 600 1.3rem/1.15 Fredoka, system-ui, sans-serif; }
+  .card p { margin: 0; color: #b6b6c4; font-size: .95rem; }
   .tags { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
   .tags li { font-size: .82rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #262636; color: #d6d6e2; }
   .tags li.first { background: #173d2c; color: #7fe7b5; }
@@ -51,7 +53,8 @@
   <h1><img src="assets/icon.svg" alt=""><span>Wiggle<span class="play">Play</span></span></h1>
   <p class="lead">Free games built for disabled children to play through movement. The camera watches, and the screen answers with gentle colour and sound. No touch, switches or controllers needed.</p>
 
-  <h2 id="games">Pick a game</h2>
+  <h2 id="games">First games</h2>
+  <p class="group">Cause and effect. Any movement makes something happen, and nothing can go wrong.</p>
   <ul class="games">
     <li><a class="card" href="games/musical-colours/">
       <img class="shot" src="assets/screens/musical-colours.png" width="640" height="400" alt="The screen filled with blue, green, amber and purple at different moments of play">
@@ -59,15 +62,6 @@
         <h3>Musical Colours</h3>
         <p>Any movement fills the screen with slowly blending colour and soft music.</p>
         <ul class="tags"><li class="first">Best first game</li><li>Any movement</li></ul>
-        <span class="go">Play</span>
-      </div>
-    </a></li>
-    <li><a class="card" href="games/walking-animals/">
-      <img class="shot" src="assets/screens/walking-animals.png" width="640" height="400" alt="An orange cat walking across a green meadow">
-      <div class="body">
-        <h3>Walking Animals</h3>
-        <p>Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep.</p>
-        <ul class="tags"><li>Head and eyes</li><li>Choose an animal</li></ul>
         <span class="go">Play</span>
       </div>
     </a></li>
@@ -98,6 +92,83 @@
         <span class="go">Play</span>
       </div>
     </a></li>
+    <li><a class="card" href="games/walking-animals/">
+      <img class="shot" src="assets/screens/walking-animals.png" width="640" height="400" alt="An orange cat walking across a green meadow">
+      <div class="body">
+        <h3>Walking Animals</h3>
+        <p>Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep.</p>
+        <ul class="tags"><li>Head and eyes</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+  </ul>
+
+  <h2>Choosing games</h2>
+  <p class="group">For children ready to pick between things. Move so the ring sits on a choice and hold it there, or use touch, keys or a switch.</p>
+  <ul class="games">
+    <li><a class="card" href="games/odd-one/">
+      <img class="shot" src="assets/screens/odd-one.png" width="640" height="400" alt="A row of four animals where one is different">
+      <div class="body">
+        <h3>Spot the Odd One</h3>
+        <p>Find the animal that is different from the others.</p>
+        <ul class="tags"><li>Looking</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+    <li><a class="card" href="games/shape-fit/">
+      <img class="shot" src="assets/screens/shape-fit.png" width="640" height="400" alt="A green square above three holes shaped like a triangle, a circle and a square">
+      <div class="body">
+        <h3>Shape Fit</h3>
+        <p>Pick the hole the shape fits and watch it glide into place.</p>
+        <ul class="tags"><li>Shapes</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+    <li><a class="card" href="games/how-many/">
+      <img class="shot" src="assets/screens/how-many.png" width="640" height="400" alt="Five puppies above the numbers 3, 4 and 5">
+      <div class="body">
+        <h3>How Many?</h3>
+        <p>Count the animals, then pick the matching number.</p>
+        <ul class="tags"><li>Counting</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+    <li><a class="card" href="games/find-the-pair/">
+      <img class="shot" src="assets/screens/find-the-pair.png" width="640" height="400" alt="Six cards, some turned over to show a bunny and a cat">
+      <div class="body">
+        <h3>Find the Pair</h3>
+        <p>Turn over cards to find two animals the same.</p>
+        <ul class="tags"><li>Memory</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+    <li><a class="card" href="games/copy-the-tune/">
+      <img class="shot" src="assets/screens/copy-the-tune.png" width="640" height="400" alt="Four tall pads with one lit up">
+      <div class="body">
+        <h3>Copy the Tune</h3>
+        <p>Watch the pads light up, then copy the tune. It grows one note at a time.</p>
+        <ul class="tags"><li>Memory</li><li>Music</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+    <li><a class="card" href="games/star-pictures/">
+      <img class="shot" src="assets/screens/star-pictures.png" width="640" height="400" alt="Stars in a night sky joined by lines into a triangle shape">
+      <div class="body">
+        <h3>Star Pictures</h3>
+        <p>Light the stars in any order to draw a picture in the sky.</p>
+        <ul class="tags"><li>Calm</li><li>No wrong answers</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
+    <li><a class="card" href="games/colour-squares/">
+      <img class="shot" src="assets/screens/colour-squares.png" width="640" height="400" alt="A grid of squares painted red, blue, yellow and green">
+      <div class="body">
+        <h3>Colour Squares</h3>
+        <p>Pick a colour and fill the squares to make your own picture.</p>
+        <ul class="tags"><li>Painting</li><li>No wrong answers</li></ul>
+        <span class="go">Play</span>
+      </div>
+    </a></li>
   </ul>
 
   <h2>How to start</h2>
@@ -118,7 +189,7 @@
   <p>Want to work on this together? That would be great. Email <a href="mailto:moeghaf@gmail.com">moeghaf@gmail.com</a> or <a href="https://github.com/moeghaf/WigglePlay/issues">open an issue on GitHub</a> to say hello, or to ask for a specific game to be built for your child. You could even try vibe coding a game yourself. It is very easy to do.</p>
 
   <h2>Sources</h2>
-  <p>Surprise Friends, Balloon Pop and Music Wall are our own takes on ideas from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt with new code, art and sound so they can be played by movement through the camera.</p>
+  <p>Ten of these games are our own takes on ideas from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>: Surprise Friends, Balloon Pop, Music Wall and all seven choosing games. Each is rebuilt with new code, art and sound so it can also be played by movement through the camera.</p>
 
   <footer>Toys for supervised play, not medical devices. Code on <a href="https://github.com/moeghaf/WigglePlay">GitHub</a>.</footer>
 </main>

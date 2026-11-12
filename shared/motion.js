@@ -5,6 +5,8 @@
      var score = motion.measure();   // call each frame; returns % of pixels that changed (0-100) in the middle zone
      motion.cols                     // with `columns` set: % changed in each column, left to right AS SEEN ON SCREEN
                                      // (like a mirror: the child's right hand is the right-hand column)
+     motion.point                    // { x, y, n }: centre of the movement as seen on screen (0-1 each way),
+                                     // and n = % of the picture that changed in the latest frame
    Video is analysed on the device only. Nothing is recorded or sent. */
 (function () {
   "use strict";
@@ -44,10 +46,11 @@
       var mean = sum / n;
       for (k = 0; k < n; k++) g[k] -= mean;
       if (prev) {
-        var inZone = 0, colChanged = NC ? new Array(NC).fill(0) : null;
+        var inZone = 0, colChanged = NC ? new Array(NC).fill(0) : null, sx = 0, sy = 0, all = 0;
         for (k = 0; k < n; k++) {
           if (Math.abs(g[k] - prev[k]) > PIXEL_DIFF) {
             x = k % W;
+            sx += x; sy += (k - x) / W; all++;
             if (x >= ZX0 && x < ZX1) inZone++;
             // the image is not mirrored, so image-left is the right-hand side of the screen
             if (NC) colChanged[NC - 1 - Math.min(NC - 1, Math.floor(x * NC / W))]++;
@@ -55,11 +58,13 @@
         }
         score = 0.5 * score + 0.5 * (100 * inZone / ((ZX1 - ZX0) * rows));
         if (NC) for (c = 0; c < NC; c++) api.cols[c] = 0.5 * api.cols[c] + 0.5 * (100 * colChanged[c] / (n / NC));
+        api.point.n = 100 * all / n;
+        if (all > 0) { api.point.x = 1 - (sx / all + 0.5) / W; api.point.y = (sy / all + 0.5) / rows; }
       }
       prev = g;
       return score;
     }
-    api = { start: start, measure: measure, cols: NC ? new Array(NC).fill(0) : [] };
+    api = { start: start, measure: measure, cols: NC ? new Array(NC).fill(0) : [], point: { x: 0.5, y: 0.5, n: 0 } };
     return api;
   };
 })();

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shape Fit - WigglePlay</title>
+<meta name="description" content="Shape Fit: a shape matching game for disabled children, played by movement, touch or a switch. Pick the hole that fits the shape.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #piece { position: absolute; left: 50%; top: 104px; width: min(30vh, 34vw, 240px); margin-left: calc(min(30vh, 34vw, 240px) / -2);
+    transition: transform .9s ease-in-out; will-change: transform; pointer-events: none; z-index: 2; }
+  #piece svg, .opt svg { display: block; }
+  #piece svg { width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+
+const SHAPES = {
+  circle: { name: "circle", colour: "#3a8fe0", d: "M50 8 A42 42 0 1 1 49.9 8 Z" },
+  square: { name: "square", colour: "#3fb96b", d: "M12 12 H88 V88 H12 Z" },
+  triangle: { name: "triangle", colour: "#f2a02c", d: "M50 8 L92 88 H8 Z" },
+  star: { name: "star", colour: "#f4d23c", d: "M50 6 L62 37 L95 39 L69 60 L78 92 L50 74 L22 92 L31 60 L5 39 L38 37 Z" },
+  heart: { name: "heart", colour: "#ee5d7c", d: "M50 90 C 10 60, 6 36, 22 22 C 34 12, 46 18, 50 30 C 54 18, 66 12, 78 22 C 94 36, 90 60, 50 90 Z" }
+};
+const KEYS = Object.keys(SHAPES);
+const solid = (k) => `<svg viewBox="0 0 100 100" role="img" aria-label="${SHAPES[k].name}"><path d="${SHAPES[k].d}" fill="${SHAPES[k].colour}" stroke="${SHAPES[k].colour}" stroke-width="6" stroke-linejoin="round"></path></svg>`;
+const hole = (k) => `<svg viewBox="0 0 100 100" role="img" aria-label="${SHAPES[k].name} hole"><path d="${SHAPES[k].d}" fill="#0f1326" stroke="#aab3d6" stroke-width="4" stroke-dasharray="7 6" stroke-linejoin="round"></path></svg>`;
+let answer = "", fitted = 0, tries = 0, last = "";
+
+function round(api) {
+  do { answer = KEYS[Math.floor(Math.random() * KEYS.length)]; } while (answer === last);
+  last = answer;
+  const n = +api.setting("holes");
+  const others = KEYS.filter((k) => k !== answer).sort(() => Math.random() - 0.5).slice(0, n - 1);
+  const slots = others.concat(answer).sort(() => Math.random() - 0.5);
+  api.stage.innerHTML = `<div id="piece">${solid(answer)}</div><div class="opts" id="opts"></div>`;
+  api.setTargets(slots.map((k) => {
+    const el = document.createElement("button");
+    el.className = "opt wp-btn"; el.innerHTML = hole(k); el.dataset.shape = k;
+    document.getElementById("opts").appendChild(el);
+    return { el, tall: true, k, pick: (t) => choose(api, t) };
+  }));
+  api.hint("Where does it fit?"); api.busy = false;
+}
+
+function choose(api, t) {
+  tries++;
+  if (t.k !== answer) { t.el.classList.remove("wobble"); void t.el.offsetWidth; t.el.classList.add("wobble"); api.tune("no"); api.hint("Try another one"); return; }
+  fitted++; api.busy = true; api.hint("");
+  // the piece glides down into its hole
+  const piece = document.getElementById("piece"), a = piece.getBoundingClientRect(), b = t.el.querySelector("svg").getBoundingClientRect();
+  const scale = b.width / a.width;
+  piece.style.transform = `translate(${(b.left + b.width / 2) - (a.left + a.width / 2)}px, ${(b.top + b.height / 2) - (a.top + a.height / 2)}px) scale(${scale.toFixed(3)})`;
+  api.later(1.0, () => { t.el.classList.add("right"); api.tune("yes"); api.say(SHAPES[answer].name); api.hint("A " + SHAPES[answer].name + "!"); });
+  api.later(3.0, () => round(api));
+}
+
+createGame({
+  name: "Shape Fit",
+  intro: "A shape appears at the top. Pick the hole it fits and it glides into place. There is no dragging, and a wrong pick just asks you to try another.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#1b2140",
+  settings: [{ id: "holes", label: "Holes to choose from", type: "select", value: "3", options: [["2", "2"], ["3", "3"], ["4", "4"]] }],
+  onStart(api) { fitted = 0; tries = 0; last = ""; round(api); },
+  summary: () => [{ n: fitted, label: "shapes fitted" }, { n: tries, label: "picks made" }]
+});
+window.__state = () => ({ answer, fitted, tries, slots: [...document.querySelectorAll(".opt")].map((e) => e.dataset.shape) });
+</script>
+</body>
+</html>

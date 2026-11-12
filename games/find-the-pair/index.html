@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find the Pair - WigglePlay</title>
+<meta name="description" content="Find the Pair: a memory game for disabled children, played by movement, touch or a switch. Turn over cards to find two animals the same.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #board { position: absolute; left: 0; right: 0; top: 96px; bottom: 104px; display: grid; gap: 2.4vmin; padding: 0 4vw;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .pcard { border-radius: 20px; background: #3a4a8c; display: flex; align-items: center; justify-content: center; transition: background .5s, opacity .8s; min-height: 0; }
+  .pcard svg { width: 80%; height: 80%; display: block; opacity: 0; transition: opacity .5s; pointer-events: none; }
+  .pcard .back { position: absolute; width: 22%; aspect-ratio: 1; border-radius: 50%; background: #5a6cc0; transition: opacity .4s; pointer-events: none; }
+  .pcard { position: relative; }
+  .pcard.up { background: #3b9a57; }
+  .pcard.up svg { opacity: 1; }
+  .pcard.up .back { opacity: 0; }
+  .pcard.done { background: #2e7d46; opacity: .75; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+import { ANIMALS, animalSVG } from "../../shared/animals.js";
+
+const KEYS = Object.keys(ANIMALS);
+let cards = [], first = null, pairsFound = 0, boards = 0, turns = 0;
+
+function deal(api) {
+  const pairs = +api.setting("pairs");
+  const picks = KEYS.slice().sort(() => Math.random() - 0.5).slice(0, pairs);
+  const order = picks.concat(picks).sort(() => Math.random() - 0.5);
+  api.stage.innerHTML = `<div id="board" style="--cols:${pairs}"></div>`;
+  cards = order.map((key, i) => {
+    const el = document.createElement("button");
+    el.className = "pcard wp-btn"; el.setAttribute("aria-label", "Card " + (i + 1));
+    el.innerHTML = `<span class="back"></span>${animalSVG(key)}`;
+    document.getElementById("board").appendChild(el);
+    return { el, key, up: false, done: false };
+  });
+  first = null; api.busy = false;
+  api.setTargets(cards.map((c) => ({ el: c.el, pick: () => turn(api, c) })));
+  api.hint("Find two the same");
+}
+
+function turn(api, c) {
+  if (c.up || c.done) return;
+  c.up = true; c.el.classList.add("up"); c.el.setAttribute("aria-label", ANIMALS[c.key].name);
+  api.note(ANIMALS[c.key].notes[0], { peak: 0.14, len: 0.9 });
+  if (!first) { first = c; api.hint(""); return; }
+  turns++;
+  const a = first; first = null;
+  if (a.key === c.key) {
+    a.done = c.done = true; pairsFound++;
+    api.later(0.5, () => { a.el.classList.add("done", "hop"); c.el.classList.add("done", "hop"); api.tune("yes"); });
+    if (cards.every((x) => x.done)) {
+      boards++; api.busy = true;
+      api.later(1.6, () => { api.tune("win"); api.hint("All found!"); });
+      api.later(4.2, () => deal(api));
+    }
+  } else {
+    api.busy = true; api.hint("Not the same. Try again");
+    api.later(1.8, () => {
+      [a, c].forEach((x) => { x.up = false; x.el.classList.remove("up"); });
+      api.busy = false;
+    });
+  }
+}
+
+createGame({
+  name: "Find the Pair",
+  intro: "Turn over two cards to find animals the same. Cards that do not match turn back over, and there is no limit on tries.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#141a33",
+  settings: [{ id: "pairs", label: "Pairs to find", type: "select", value: "3", options: [["2", "2 pairs (4 cards)"], ["3", "3 pairs (6 cards)"], ["4", "4 pairs (8 cards)"]] }],
+  onStart(api) { pairsFound = 0; boards = 0; turns = 0; deal(api); },
+  summary: () => [{ n: pairsFound, label: "pairs found" }, { n: boards, label: "boards finished" }]
+});
+window.__state = () => ({ keys: cards.map((c) => c.key), up: cards.map((c) => c.up), done: cards.map((c) => c.done), pairsFound, boards });
+</script>
+</body>
+</html>

@@ -42,3 +42,26 @@ button.ghost { font-size: .95rem; padding: 9px 14px; border-radius: 10px; border
 #summary .row { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px 40px; margin: 18px 0; }
 #summary .row p { margin: 0; }
 .credit { margin-top: 26px; font-size: .82rem; color: #8c8c9c; line-height: 1.45; }
+
+/* choosing between targets */
+#cursor { position: fixed; left: 0; top: 0; width: 48px; height: 48px; border-radius: 50%; z-index: 13; display: none; pointer-events: none;
+  border: 4px solid rgba(255,255,255,.9); box-shadow: 0 0 0 2px rgba(0,0,0,.35); will-change: transform; }
+#cursorFill { width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,.75); transform: scale(0); }
+.wp-target { outline: 0 solid #ffffff; outline-offset: 5px; cursor: pointer; }
+.wp-target.wp-on { outline-width: calc(3px + 7px * var(--dwell, 0)); }
+.wp-target.wp-hi { outline: 6px dashed #ffffff; }
+.wp-btn { border: 0; padding: 0; font: inherit; color: inherit; background: none; }
+
+/* shared pieces for choosing games */
+@font-face { font-family: Fredoka; font-weight: 600; font-display: swap; src: url(../assets/fredoka-600-latin.woff2) format("woff2"); }
+.opts { position: absolute; left: 0; right: 0; bottom: 104px; display: flex; gap: 16px; padding: 0 16px; justify-content: center; }
+.opt { flex: 1 1 0; max-width: 240px; height: min(26vh, 220px); border-radius: 22px; background: #232842; color: #fff;
+  display: flex; align-items: center; justify-content: center; font: 600 clamp(44px, 11vmin, 104px)/1 Fredoka, system-ui, sans-serif;
+  transition: opacity .6s, background .6s; }
+.opt svg { width: 78%; height: 78%; display: block; pointer-events: none; }
+.opt.dim { opacity: .3; }
+.opt.right { background: #1f7a4d; }
+@keyframes wp-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+.wobble { animation: wp-wobble .5s ease-in-out 2; }
+@keyframes wp-hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14%); } }
+.hop { animation: wp-hop .6s ease-in-out; }

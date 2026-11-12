@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Star Pictures - WigglePlay</title>
+<meta name="description" content="Star Pictures: a calm game for disabled children, played by movement, touch or a switch. Light the stars to draw a picture in the sky.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #sky { position: absolute; left: 50%; top: 50%; width: min(86vw, 76vh); aspect-ratio: 1; transform: translate(-50%, -52%); }
+  #sky svg.lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  #sky line { stroke: #ffe58a; stroke-width: 1.2; stroke-linecap: round; opacity: 0; transition: opacity 1s; }
+  #sky line.on { opacity: .9; }
+  .star { position: absolute; width: 15%; aspect-ratio: 1; margin: -7.5% 0 0 -7.5%; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .star svg { width: 62%; height: 62%; display: block; pointer-events: none; transition: transform .8s; }
+  .star path { fill: #6f78a8; transition: fill .8s; }
+  .star.lit path { fill: #ffe58a; }
+  .star.lit svg { transform: scale(1.35); }
+  .dust { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #9aa3cf; opacity: .5; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+
+// Simple pictures of our own, as dots (0-100 across and down) and the lines that join them.
+const PICTURES = [
+  { name: "house", pts: [[20, 88], [20, 46], [50, 16], [80, 46], [80, 88]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [1, 3]] },
+  { name: "boat", pts: [[12, 62], [30, 86], [70, 86], [88, 62], [50, 62], [50, 14]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [4, 5], [5, 3]] },
+  { name: "kite", pts: [[50, 8], [78, 36], [50, 66], [22, 36], [56, 92]], edges: [[0, 1], [1, 2], [2, 3], [3, 0], [2, 4]] },
+  { name: "fish", pts: [[12, 50], [38, 26], [68, 50], [38, 74], [90, 28], [90, 72]], edges: [[0, 1], [1, 2], [2, 3], [3, 0], [2, 4], [4, 5], [5, 2]] },
+  { name: "tree", pts: [[50, 8], [80, 62], [20, 62], [50, 62], [50, 92]], edges: [[0, 1], [1, 3], [3, 2], [2, 0], [3, 4]] },
+  { name: "arrow", pts: [[10, 50], [62, 50], [62, 24], [92, 50], [62, 76]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1]] }
+];
+const STAR = '<svg viewBox="0 0 100 100"><path d="M50 6 L62 37 L95 39 L69 60 L78 92 L50 74 L22 92 L31 60 L5 39 L38 37 Z"></path></svg>';
+const NOTES = [392, 440, 523.25, 587.33, 659.25, 783.99, 880];
+let pic = null, lit = [], order = [], done = 0, starsLit = 0;
+
+function next(api) {
+  if (!order.length) order = PICTURES.map((_, i) => i).sort(() => Math.random() - 0.5);
+  pic = PICTURES[order.pop()]; lit = pic.pts.map(() => false);
+  let dust = "";
+  for (let i = 0; i < 26; i++) dust += `<div class="dust" style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%"></div>`;
+  api.stage.innerHTML = dust + `<div id="sky"><svg class="lines" viewBox="0 0 100 100">${pic.edges.map((e, i) => `<line id="e${i}" x1="${pic.pts[e[0]][0]}" y1="${pic.pts[e[0]][1]}" x2="${pic.pts[e[1]][0]}" y2="${pic.pts[e[1]][1]}"></line>`).join("")}</svg></div>`;
+  api.setTargets(pic.pts.map((p, i) => {
+    const el = document.createElement("button");
+    el.className = "star wp-btn"; el.style.left = p[0] + "%"; el.style.top = p[1] + "%"; el.innerHTML = STAR;
+    el.setAttribute("aria-label", "Star " + (i + 1));
+    document.getElementById("sky").appendChild(el);
+    return { el, pick: () => choose(api, i, el) };
+  }));
+  api.hint("Light the stars"); api.busy = false;
+}
+
+function choose(api, i, el) {
+  if (lit[i]) return;
+  lit[i] = true; starsLit++; el.classList.add("lit");
+  api.note(NOTES[lit.filter(Boolean).length - 1] || 880, { peak: 0.15, len: 1.6 });
+  api.hint("");
+  pic.edges.forEach((e, k) => { if (lit[e[0]] && lit[e[1]]) document.getElementById("e" + k).classList.add("on"); });
+  if (lit.every(Boolean)) {
+    done++; api.busy = true;
+    const word = (/^[aeiou]/.test(pic.name) ? "An " : "A ") + pic.name;
+    api.later(1.1, () => { api.tune("win"); api.say(word); api.hint(word + "!"); });
+    api.later(5.0, () => next(api));
+  }
+}
+
+createGame({
+  name: "Star Pictures",
+  intro: "Stars wait in a night sky. Pick them in any order to light them, and lines join the lit stars until a picture appears. Nothing can go wrong.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#0b1030",
+  onStart(api) { done = 0; starsLit = 0; order = []; next(api); },
+  summary: () => [{ n: done, label: "pictures finished" }, { n: starsLit, label: "stars lit" }]
+});
+window.__state = () => ({ name: pic && pic.name, lit: lit.slice(), done, starsLit });
+</script>
+</body>
+</html>

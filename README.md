@@ -15,17 +15,24 @@ Free games built for disabled children to interact with a screen through movemen
 
 | | Game | What happens |
 | --- | --- | --- |
-| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/WigglePlay/games/musical-colours/) | Movement fills the screen with slowly blending colour and gentle music |
-| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/WigglePlay/games/walking-animals/) | An animal walks towards the side the child looks at, and sleeps when their eyes close |
-| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://moeghaf.github.io/WigglePlay/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own tune |
-| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://moeghaf.github.io/WigglePlay/games/balloon-pop/) | Balloons float up and movement pops them, anywhere or on the side you move |
-| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://moeghaf.github.io/WigglePlay/games/music-wall/) | Movement on one side of the screen lights that pad and plays its note |
+| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/WigglePlay/games/musical-colours/) | Any movement fills the screen with slowly blending colour and soft music. |
+| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://moeghaf.github.io/WigglePlay/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own little tune. |
+| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://moeghaf.github.io/WigglePlay/games/balloon-pop/) | Balloons float up the screen. Move to pop them, with a real pop and a shower of pieces. |
+| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://moeghaf.github.io/WigglePlay/games/music-wall/) | Move on one side of the screen to light that pad and play its note. |
+| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/WigglePlay/games/walking-animals/) | Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep. |
+| <img src="assets/screens/odd-one.png" width="160" alt=""> | [**Spot the Odd One**](https://moeghaf.github.io/WigglePlay/games/odd-one/) | Find the animal that is different from the others. |
+| <img src="assets/screens/shape-fit.png" width="160" alt=""> | [**Shape Fit**](https://moeghaf.github.io/WigglePlay/games/shape-fit/) | Pick the hole the shape fits and watch it glide into place. |
+| <img src="assets/screens/how-many.png" width="160" alt=""> | [**How Many?**](https://moeghaf.github.io/WigglePlay/games/how-many/) | Count the animals, then pick the matching number. |
+| <img src="assets/screens/find-the-pair.png" width="160" alt=""> | [**Find the Pair**](https://moeghaf.github.io/WigglePlay/games/find-the-pair/) | Turn over cards to find two animals the same. |
+| <img src="assets/screens/copy-the-tune.png" width="160" alt=""> | [**Copy the Tune**](https://moeghaf.github.io/WigglePlay/games/copy-the-tune/) | Watch the pads light up, then copy the tune. It grows one note at a time. |
+| <img src="assets/screens/star-pictures.png" width="160" alt=""> | [**Star Pictures**](https://moeghaf.github.io/WigglePlay/games/star-pictures/) | Light the stars in any order to draw a picture in the sky. |
+| <img src="assets/screens/colour-squares.png" width="160" alt=""> | [**Colour Squares**](https://moeghaf.github.io/WigglePlay/games/colour-squares/) | Pick a colour and fill the squares to make your own picture. |
 
 More to come.
 
 ## Sources
 
-Surprise Friends, Balloon Pop and Music Wall are our own takes on ideas from the free switch-accessible games at [CerebralPalsyCenter.com](https://www.cerebralpalsycenter.com/games/). They are rebuilt with new code, art and sound so they can be played by movement through the camera.
+Ten of these games are our own takes on ideas from the free switch-accessible games at [CerebralPalsyCenter.com](https://www.cerebralpalsycenter.com/games/): Surprise Friends, Balloon Pop, Music Wall and the seven choosing games from Spot the Odd One to Colour Squares. Each is rebuilt with new code, art and sound so it can also be played by movement through the camera.
 
 ## Collaborate
 

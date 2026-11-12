@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colour Squares - WigglePlay</title>
+<meta name="description" content="Colour Squares: a painting game for disabled children, played by movement, touch or a switch. Pick a colour and fill the squares.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #grid { position: absolute; left: 0; right: 0; top: 96px; bottom: calc(104px + 13vh + 18px); display: grid; gap: 1.4vmin; padding: 0 3vw;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); grid-template-rows: repeat(var(--rows), minmax(0, 1fr)); }
+  .cell { border-radius: 14px; background: #262b45; transition: background .5s; min-height: 0; }
+  #palette { position: absolute; left: 0; right: 0; bottom: 104px; height: 13vh; display: flex; gap: 14px; padding: 0 3vw; justify-content: center; }
+  .swatch { flex: 1 1 0; max-width: 150px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+  .swatch.sel { box-shadow: inset 0 0 0 6px #fff; }
+  .swatch svg { width: 40%; height: 60%; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+
+const COLOURS = [["red", "#e8503a"], ["yellow", "#f4d23c"], ["green", "#3fb96b"], ["blue", "#3a8fe0"], ["purple", "#9a5bd6"]];
+const NOTES = [329.63, 392, 440, 523.25, 587.33];
+const EMPTY = "#262b45";
+let cells = [], current = 0, painted = 0;
+
+function setColour(api, i, swatches) {
+  current = i;
+  swatches.forEach((s, k) => s.classList.toggle("sel", k === i));
+  api.note(NOTES[i], { peak: 0.12, len: 0.6 });
+  api.hint("");
+}
+function paint(api, c) {
+  if (c.colour === current) { c.colour = -1; c.el.style.background = EMPTY; api.note(220, { peak: 0.08, len: 0.4, type: "sine" }); }
+  else { c.colour = current; c.el.style.background = COLOURS[current][1]; painted++; api.note(NOTES[current], { peak: 0.14, len: 0.9 }); }
+  c.el.setAttribute("aria-label", c.colour < 0 ? "Empty square" : COLOURS[c.colour][0] + " square");
+}
+
+createGame({
+  name: "Colour Squares",
+  intro: "Pick a colour, then pick squares to fill them. Picking a square again in the same colour clears it. There is no goal, just making a picture.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#141830",
+  settings: [{ id: "size", label: "Squares", type: "select", value: "4x3", options: [["3x2", "6 big squares"], ["4x3", "12 squares"], ["6x4", "24 small squares"]] }],
+  onStart(api) {
+    const [cols, rows] = api.setting("size").split("x").map(Number);
+    api.stage.innerHTML = `<div id="grid" style="--cols:${cols};--rows:${rows}"></div><div id="palette"></div>`;
+    painted = 0; cells = [];
+    const targets = [], swatches = [];
+    for (let i = 0; i < cols * rows; i++) {
+      const el = document.createElement("button");
+      el.className = "cell wp-btn"; el.setAttribute("aria-label", "Empty square");
+      document.getElementById("grid").appendChild(el);
+      const c = { el, colour: -1 }; cells.push(c);
+      targets.push({ el, pick: () => paint(api, c) });
+    }
+    COLOURS.forEach(([name, hex], i) => {
+      const el = document.createElement("button");
+      el.className = "swatch wp-btn"; el.style.background = hex; el.setAttribute("aria-label", name + " paint");
+      document.getElementById("palette").appendChild(el); swatches.push(el);
+      targets.push({ el, pick: () => setColour(api, i, swatches) });
+    });
+    const wipe = document.createElement("button");
+    wipe.className = "swatch wp-btn"; wipe.style.background = "#3a3f5c"; wipe.setAttribute("aria-label", "Clear all squares");
+    wipe.innerHTML = '<svg viewBox="0 0 40 40"><path d="M8 8 L32 32 M32 8 L8 32" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"></path></svg>';
+    document.getElementById("palette").appendChild(wipe);
+    targets.push({ el: wipe, pick: () => { cells.forEach((c) => { c.colour = -1; c.el.style.background = EMPTY; }); api.tune("tick"); } });
+    api.setTargets(targets);
+    current = 0; swatches[0].classList.add("sel");
+    api.hint("Pick a colour, then fill the squares");
+  },
+  summary: () => [{ n: painted, label: "squares painted" }]
+});
+window.__state = () => ({ current, painted, colours: cells.map((c) => c.colour) });
+</script>
+</body>
+</html>

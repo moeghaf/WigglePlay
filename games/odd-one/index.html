@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot the Odd One - WigglePlay</title>
+<meta name="description" content="Spot the Odd One: a looking game for disabled children, played by movement, touch or a switch. Find the animal that is different.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  .opts.mid { bottom: auto; top: 50%; transform: translateY(-50%); }
+  .opts.mid .opt { height: min(46vh, 300px); background: #3b9a57; }
+  .opt.flip svg { transform: scaleX(-1); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+import { ANIMALS, animalSVG } from "../../shared/animals.js";
+
+const KEYS = Object.keys(ANIMALS);
+let oddIndex = -1, found = 0, tries = 0;
+
+function round(api) {
+  const n = +api.setting("count"), hard = api.setting("level") === "facing";
+  const main = KEYS[Math.floor(Math.random() * KEYS.length)];
+  let other; do { other = KEYS[Math.floor(Math.random() * KEYS.length)]; } while (other === main);
+  let next; do { next = Math.floor(Math.random() * n); } while (next === oddIndex && n > 1);
+  oddIndex = next;
+  api.stage.innerHTML = '<div class="opts mid" id="opts"></div>';
+  const targets = [];
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement("button"), odd = i === oddIndex;
+    el.className = "opt wp-btn" + (hard && odd ? " flip" : "");
+    el.innerHTML = animalSVG(hard || !odd ? main : other);
+    el.setAttribute("aria-label", "Picture " + (i + 1));
+    document.getElementById("opts").appendChild(el);
+    targets.push({ el, tall: true, odd, pick: (t) => choose(api, t) });
+  }
+  api.setTargets(targets);
+  api.hint("Which one is different?"); api.busy = false;
+}
+
+function choose(api, t) {
+  tries++;
+  if (!t.odd) { t.el.classList.add("dim", "wobble"); api.tune("no"); api.hint("Look again"); return; }
+  found++; api.busy = true; t.el.classList.add("hop"); api.tune("yes"); api.hint("That one is different!");
+  api.later(2.6, () => round(api));
+}
+
+createGame({
+  name: "Spot the Odd One",
+  intro: "A row of animals appears and one is different. Pick the different one. A wrong pick just says look again.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#1b2140",
+  settings: [
+    { id: "count", label: "Pictures in the row", type: "select", value: "4", options: [["3", "3"], ["4", "4"], ["5", "5"]] },
+    { id: "level", label: "What is different", type: "select", value: "animal", options: [["animal", "A different animal (easier)"], ["facing", "Same animal, facing the other way (harder)"]] }
+  ],
+  onStart(api) { found = 0; tries = 0; oddIndex = -1; round(api); },
+  summary: () => [{ n: found, label: "odd ones found" }, { n: tries, label: "picks made" }]
+});
+window.__state = () => ({ oddIndex, found, tries });
+</script>
+</body>
+</html>

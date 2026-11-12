@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy the Tune - WigglePlay</title>
+<meta name="description" content="Copy the Tune: a memory game for disabled children, played by movement, touch or a switch. Watch the pads light up, then copy the tune.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #pads { position: absolute; inset: 0; display: flex; gap: 12px; padding: 96px 12px 110px; }
+  .pad { flex: 1 1 0; border-radius: 22px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+
+const HUES = [205, 150, 45, 285];
+const NOTES = [261.63, 329.63, 392.00, 523.25];
+let pads = [], seq = [], pos = 0, longest = 0, finished = 0, maxLen = 4;
+
+function light(api, i, loud) {
+  pads[i].level = 1; pads[i].hold = 0.45;
+  api.note(NOTES[i], { peak: loud ? 0.18 : 0.15, len: 1.2 });
+}
+function playback(api) {
+  api.busy = true; api.hint("Watch and listen");
+  seq.forEach((i, k) => api.later(0.8 + k * 0.85, () => light(api, i, true)));
+  api.later(0.8 + seq.length * 0.85 + 0.3, () => { pos = 0; api.busy = false; api.hint("Your turn"); });
+}
+function newTune(api) { seq = [Math.floor(Math.random() * 4)]; playback(api); }
+function grow() { let n; do { n = Math.floor(Math.random() * 4); } while (n === seq[seq.length - 1]); seq.push(n); }
+
+function choose(api, i) {
+  light(api, i, false);
+  if (i !== seq[pos]) {
+    api.busy = true; api.hint("Listen again");
+    api.later(0.9, () => api.tune("no"));
+    api.later(1.9, () => playback(api));
+    return;
+  }
+  pos++;
+  if (pos < seq.length) return;
+  longest = Math.max(longest, seq.length); api.busy = true;
+  if (seq.length >= maxLen) {
+    finished++;
+    api.later(0.7, () => { api.tune("win"); api.hint("You copied the whole tune!"); });
+    api.later(4.0, () => newTune(api));
+  } else {
+    api.later(0.7, () => { api.tune("tick"); api.hint("Well done. One more note"); });
+    api.later(1.9, () => { grow(); playback(api); });
+  }
+}
+
+createGame({
+  name: "Copy the Tune",
+  intro: "The pads light up and play a short tune, starting with one note. Copy it by picking the same pads in order. Each time it grows by one note, and a wrong pick just plays the tune again.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#10131c",
+  settings: [{ id: "len", label: "Longest tune", type: "select", value: "4", options: [["3", "3 notes"], ["4", "4 notes"], ["5", "5 notes"], ["6", "6 notes"]] }],
+  onStart(api) {
+    api.stage.innerHTML = '<div id="pads"></div>';
+    longest = 0; finished = 0; maxLen = +api.setting("len");
+    pads = HUES.map((h, i) => {
+      const el = document.createElement("button");
+      el.className = "pad wp-btn"; el.setAttribute("aria-label", "Pad " + (i + 1));
+      document.getElementById("pads").appendChild(el);
+      return { el, level: 0, shown: 0, hold: 0 };
+    });
+    api.setTargets(pads.map((p, i) => ({ el: p.el, tall: true, pick: () => choose(api, i) })));
+    newTune(api);
+  },
+  onFrame(api, dt) {
+    pads.forEach((p, i) => {
+      p.hold = Math.max(0, p.hold - dt);
+      if (p.hold <= 0) p.level = 0;
+      // glow rises and falls gradually, never as a flash
+      const rate = p.level > p.shown ? dt / 0.25 : dt / 0.6;
+      p.shown += Math.max(-rate, Math.min(rate, p.level - p.shown));
+      p.el.style.background = `hsl(${HUES[i]} ${(28 + 42 * p.shown).toFixed(1)}% ${(17 + 35 * p.shown).toFixed(1)}%)`;
+    });
+  },
+  summary: () => [{ n: longest, label: "notes in the longest tune copied" }, { n: finished, label: "whole tunes finished" }]
+});
+window.__state = () => ({ seq: seq.slice(), pos, longest, finished });
+</script>
+</body>
+</html>

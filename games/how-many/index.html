@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Many? - WigglePlay</title>
+<meta name="description" content="How Many?: a counting game for disabled children, played by movement, touch or a switch. Count the animals and pick the number.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #things { position: absolute; left: 0; right: 0; top: 96px; bottom: calc(104px + min(26vh, 220px) + 20px);
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; align-content: center; gap: 2vmin; padding: 0 4vw; }
+  .thing { width: var(--size); transition: filter .4s; }
+  .thing svg { display: block; width: 100%; height: auto; }
+  .thing.counted { filter: drop-shadow(0 0 14px #fff); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+import { ANIMALS, animalSVG } from "../../shared/animals.js";
+
+const KEYS = Object.keys(ANIMALS);
+const COUNT_NOTES = [261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25, 783.99, 880];
+let answer = 0, right = 0, tries = 0, lastAnswer = 0;
+
+function round(api) {
+  const max = +api.setting("max");
+  do { answer = 1 + Math.floor(Math.random() * max); } while (answer === lastAnswer);
+  lastAnswer = answer;
+  const key = KEYS[Math.floor(Math.random() * KEYS.length)];
+  const size = answer <= 3 ? 24 : answer <= 6 ? 18 : 14;
+  api.stage.innerHTML = `<div id="things">${Array.from({ length: answer }, () => `<div class="thing" style="--size:${size}vmin">${animalSVG(key)}</div>`).join("")}</div><div class="opts" id="opts"></div>`;
+  const choices = new Set([answer]);
+  while (choices.size < 3) choices.add(1 + Math.floor(Math.random() * Math.max(3, max)));
+  const targets = [];
+  [...choices].sort((a, b) => a - b).forEach((n) => {
+    const el = document.createElement("button");
+    el.className = "opt wp-btn"; el.textContent = n; el.setAttribute("aria-label", String(n));
+    document.getElementById("opts").appendChild(el);
+    targets.push({ el, tall: true, n, pick: (t) => choose(api, t) });
+  });
+  api.setTargets(targets);
+  api.hint("How many?");
+  api.busy = false;
+}
+
+function choose(api, t) {
+  tries++;
+  if (t.n !== answer) {
+    t.el.classList.add("dim", "wobble"); api.tune("no"); api.hint("Count again");
+    return;
+  }
+  right++; api.busy = true; t.el.classList.add("right"); api.hint("");
+  // count the animals one by one, then celebrate
+  const things = [...document.querySelectorAll(".thing")];
+  things.forEach((el, i) => api.later(0.45 * i, () => { el.classList.add("counted", "hop"); api.note(COUNT_NOTES[i], { peak: 0.14, len: 0.8 }); }));
+  api.later(0.45 * things.length + 0.2, () => { api.say(String(answer)); api.tune("yes"); api.hint(String(answer) + "!"); });
+  api.later(0.45 * things.length + 2.4, () => round(api));
+}
+
+createGame({
+  name: "How Many?",
+  intro: "Count the animals, then pick the matching number from three choices. A wrong pick just says count again, and a right one counts them out loud.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt so it can also be played by movement through the camera.',
+  choose: true,
+  background: "#17203a",
+  settings: [{ id: "max", label: "Count up to", type: "select", value: "5", options: [["3", "3"], ["5", "5"], ["10", "10"]] }],
+  onStart(api) { right = 0; tries = 0; lastAnswer = 0; round(api); },
+  summary: () => [{ n: right, label: "counted correctly" }, { n: tries, label: "picks made" }]
+});
+window.__state = () => ({ answer, right, tries, options: [...document.querySelectorAll(".opt")].map((e) => +e.textContent) });
+</script>
+</body>
+</html>
