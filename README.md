@@ -21,7 +21,7 @@ More to come.
 
 ## Collaborate
 
-Want to work on this together? That would be great. [Open an issue](https://github.com/moeghaf/camera-toy/issues) to say hello, or to ask for a specific game to be built for your child.
+Want to work on this together? That would be great. Email [moeghaf@gmail.com](mailto:moeghaf@gmail.com) or [open an issue](https://github.com/moeghaf/camera-toy/issues) to say hello, or to ask for a specific game to be built for your child.
 
 You could even try vibe coding a game yourself. It is very easy to do:
 
