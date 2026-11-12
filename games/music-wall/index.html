@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Music Wall - WigglePlay</title>
+<meta name="description" content="Music Wall: a camera game for disabled children. Move on one side of the screen to light that pad and play its note.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #pads { position: absolute; inset: 0; display: flex; gap: 10px; padding: 64px 10px 110px; }
+  .pad { flex: 1 1 0; border: 0; border-radius: 22px; cursor: pointer; padding: 0; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+
+const COLS = 4;
+const HUES = [205, 150, 45, 285];
+const SCALES = {
+  bright: [261.63, 329.63, 392.00, 523.25],     // C E G C
+  calm: [196.00, 246.94, 293.66, 392.00]        // G B D G
+};
+let pads = [], played = [], total = 0;
+
+function strike(api, i) {
+  const p = pads[i]; if (!p || p.wait > 0) return;
+  const scale = SCALES[api.setting("sound")] || SCALES.bright;
+  api.note(scale[i], { peak: 0.18, len: 1.8 });
+  api.note(scale[i] * 2, { peak: 0.05, len: 1.0 });
+  p.wait = 0.55; p.target = 1; p.hold = 0.5; played[i]++; total++;
+}
+
+createGame({
+  name: "Music Wall",
+  intro: "Four big pads fill the screen. Moving on one side lights the pad on that side and plays its note, like a mirror. The notes always sound good together, and there is no right or wrong.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt for camera control.',
+  columns: COLS,
+  background: "#10131c",
+  settings: [
+    { id: "sound", label: "Notes", type: "select", value: "bright", options: [["bright", "Bright"], ["calm", "Calm and low"]] }
+  ],
+  onStart(api) {
+    api.stage.innerHTML = '<div id="pads"></div>';
+    pads = []; played = new Array(COLS).fill(0); total = 0;
+    for (let i = 0; i < COLS; i++) {
+      const el = document.createElement("button");
+      el.className = "pad"; el.setAttribute("aria-label", "Pad " + (i + 1));
+      el.__index = i;
+      document.getElementById("pads").appendChild(el);
+      pads.push({ el, level: 0, target: 0, hold: 0, wait: 0 });
+    }
+  },
+  onFrame(api, dt) {
+    for (let i = 0; i < COLS; i++) {
+      const p = pads[i];
+      p.wait = Math.max(0, p.wait - dt);
+      if (api.cols[i]) strike(api, i);
+      p.hold = Math.max(0, p.hold - dt);
+      if (p.hold <= 0) p.target = 0;
+      // the glow rises and falls gradually, never as a flash
+      const rate = p.target > p.level ? dt / 0.35 : dt / 1.4;
+      p.level += Math.max(-rate, Math.min(rate, p.target - p.level));
+      p.el.style.background = `hsl(${HUES[i]} ${(28 + 42 * p.level).toFixed(1)}% ${(16 + 36 * p.level).toFixed(1)}%)`;
+    }
+  },
+  onPointer(api, x, y, target) { if (target && target.__index !== undefined) strike(api, target.__index); },
+  onAction(api) { strike(api, total % COLS); },
+  onKey(api, e) { const n = "1234".indexOf(e.key); if (n >= 0) strike(api, n); },
+  summary: () => [{ n: total, label: "notes played" }].concat(played.map((n, i) => ({ n, label: "pad " + (i + 1) })))
+});
+window.__state = () => ({ total, played: played.slice() });
+</script>
+</body>
+</html>

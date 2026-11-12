@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Balloon Pop - WigglePlay</title>
+<meta name="description" content="Balloon Pop: a camera game for disabled children. Move to pop balloons as they float up the screen.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  .balloon { position: absolute; left: 0; top: 0; will-change: transform, opacity; cursor: pointer; }
+  .balloon svg { display: block; width: 100%; height: auto; pointer-events: none; }
+  .bit { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform, opacity; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+
+const COLOURS = ["#e8503a", "#f2a02c", "#f4d23c", "#3fb96b", "#3a8fe0", "#9a5bd6", "#ee6fa8"];
+const NOTES = [523.25, 587.33, 659.25, 783.99, 880];
+const COLS = 4;
+const balloonSVG = (c) => `<svg viewBox="0 0 100 150"><path d="M50 116 q-7 16 2 32" fill="none" stroke="#ffffff" stroke-opacity="0.75" stroke-width="2.5" stroke-linecap="round"></path><ellipse cx="50" cy="55" rx="42" ry="52" fill="${c}"></ellipse><polygon points="43,105 57,105 50,117" fill="${c}"></polygon><ellipse cx="34" cy="34" rx="9" ry="15" fill="#ffffff" opacity="0.35" transform="rotate(-20 34 34)"></ellipse></svg>`;
+
+let balloons = [], bits = [], popped = 0, sinceLastPop = 9, colourIndex = 0, wanted = 5, spawnWait = 0;
+
+function size(api) { return Math.max(70, Math.min(api.width, api.height) * 0.17); }
+
+function addBalloon(api, startOnScreen) {
+  const w = size(api), el = document.createElement("div"), colour = COLOURS[colourIndex++ % COLOURS.length];
+  el.className = "balloon"; el.style.width = w + "px"; el.innerHTML = balloonSVG(colour);
+  api.stage.appendChild(el);
+  const b = { el, colour, w, h: w * 1.5,
+    x: 0.08 + Math.random() * 0.84,
+    y: startOnScreen ? api.height * (0.25 + Math.random() * 0.55) : api.height + 20 + Math.random() * 80,
+    speed: 22 + Math.random() * 16, phase: Math.random() * 6.28, popT: -1 };
+  balloons.push(b); el.__balloon = b;
+  return b;
+}
+
+function popBalloon(api, b) {
+  if (!b || b.popT >= 0) return;
+  b.popT = 0; popped++; sinceLastPop = 0;
+  api.pop(); api.note(NOTES[popped % NOTES.length], { when: 0.05, peak: 0.13, len: 1.0 });
+  const cx = b.x * api.width, cy = b.y + b.w * 0.55;
+  for (let i = 0; i < 10; i++) {
+    const el = document.createElement("div"), s = 12 + Math.random() * 14, a = (i / 10) * 6.283 + Math.random() * 0.4, v = 120 + Math.random() * 140;
+    el.className = "bit"; el.style.width = el.style.height = s + "px"; el.style.background = b.colour;
+    api.stage.appendChild(el);
+    bits.push({ el, x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, t: 0 });
+  }
+}
+
+// Which balloon should a movement pop? The one most fully on screen, nearest the middle height.
+function pick(api, column) {
+  let best = null, bestScore = 1e9;
+  for (const b of balloons) {
+    if (b.popT >= 0) continue;
+    const cy = b.y + b.h * 0.4;
+    if (cy < 0 || cy > api.height) continue;
+    if (column !== undefined && Math.min(COLS - 1, Math.floor(b.x * COLS)) !== column) continue;
+    const s = Math.abs(cy - api.height * 0.45);
+    if (s < bestScore) { bestScore = s; best = b; }
+  }
+  return best;
+}
+
+createGame({
+  name: "Balloon Pop",
+  intro: "Balloons float up the screen and movement pops them, with a real pop and a shower of pieces. There is no timer and no way to lose.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt for camera control.',
+  columns: COLS,
+  background: "#8fd0ee",
+  settings: [
+    { id: "mode", label: "How to pop", type: "select", value: "any", options: [["any", "Any movement pops a balloon"], ["where", "Move where the balloon is"]],
+      hint: "The second choice works like a mirror: the screen is split into 4 columns, and movement on one side pops balloons on that side." },
+    { id: "count", label: "Balloons on screen", type: "select", value: "5", options: [["3", "3"], ["5", "5"], ["8", "8"]] }
+  ],
+  onStart(api) {
+    balloons = []; bits = []; popped = 0; sinceLastPop = 9; spawnWait = 0;
+    wanted = +api.setting("count");
+    for (let i = 0; i < wanted; i++) addBalloon(api, true);
+  },
+  onFrame(api, dt, now) {
+    sinceLastPop += dt;
+    // movement pops, at most one balloon every 0.8 s
+    if (sinceLastPop > 0.8) {
+      if (api.setting("mode") === "where") {
+        for (let c = 0; c < COLS; c++) if (api.cols[c]) { const b = pick(api, c); if (b) { popBalloon(api, b); break; } }
+      } else if (api.active) popBalloon(api, pick(api));
+    }
+    // balloons drift up and sway; one that leaves the top comes round again
+    for (let i = balloons.length - 1; i >= 0; i--) {
+      const b = balloons[i];
+      if (b.popT >= 0) {
+        b.popT += dt;
+        const k = Math.min(1, b.popT / 0.22);
+        b.el.style.opacity = (1 - k).toFixed(3);
+        b.el.style.transform = `translate(${b.x * api.width - b.w / 2}px, ${b.y}px) scale(${(1 + 0.35 * k).toFixed(3)})`;
+        if (k >= 1) { b.el.remove(); balloons.splice(i, 1); }
+        continue;
+      }
+      b.y -= b.speed * dt;
+      if (b.y < -b.h) { b.y = api.height + 20; b.x = 0.08 + Math.random() * 0.84; }
+      const sway = Math.sin(now / 900 + b.phase) * b.w * 0.12;
+      b.el.style.transform = `translate(${b.x * api.width - b.w / 2 + sway}px, ${b.y}px)`;
+    }
+    // a new balloon rises about a second after each pop
+    if (balloons.length < wanted) { spawnWait += dt; if (spawnWait > 1) { spawnWait = 0; addBalloon(api, false); } }
+    // popped pieces fly out, fall and fade
+    for (let i = bits.length - 1; i >= 0; i--) {
+      const p = bits[i]; p.t += dt; p.vy += 420 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+      p.el.style.transform = `translate(${p.x}px, ${p.y}px)`; p.el.style.opacity = Math.max(0, 1 - p.t / 0.9).toFixed(3);
+      if (p.t > 0.9) { p.el.remove(); bits.splice(i, 1); }
+    }
+  },
+  onAction(api) { popBalloon(api, pick(api)); },
+  onPointer(api, x, y, target) {
+    const el = target.closest ? target.closest(".balloon") : null;
+    popBalloon(api, el ? el.__balloon : pick(api));
+  },
+  summary: () => [{ n: popped, label: "balloons popped" }]
+});
+window.__state = () => ({ popped, balloons: balloons.length, bits: bits.length });
+</script>
+</body>
+</html>

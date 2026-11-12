@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Surprise Friends - WigglePlay</title>
+<meta name="description" content="Surprise Friends: a camera game for disabled children. Any movement brings a new animal friend onto the screen with its own tune.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../shared/kit.css">
+<style>
+  #meadow { position: absolute; left: 0; right: 0; bottom: 0; height: 32%; background: #2e7d46; }
+  .friend { position: absolute; left: 0; bottom: 0; will-change: transform, opacity; pointer-events: none; }
+  .friend svg { display: block; width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createGame } from "../../shared/kit.js";
+import { ANIMALS, animalSVG } from "../../shared/animals.js";
+
+const KEYS = Object.keys(ANIMALS);
+const STAY_S = 7, MAX_FRIENDS = 5, GAP_S = 1.6;
+let friends = [], visits = 0, sinceLast = 9, order = [];
+
+function nextAnimal() {
+  if (!order.length) order = KEYS.slice().sort(() => Math.random() - 0.5);
+  return order.pop();
+}
+
+function addFriend(api) {
+  if (sinceLast < GAP_S || friends.length >= MAX_FRIENDS) return;
+  sinceLast = 0; visits++;
+  const key = nextAnimal(), a = ANIMALS[key], w = Math.max(110, Math.min(api.width, api.height) * 0.26);
+  const taken = friends.map((f) => f.slot), free = [0, 1, 2, 3, 4].filter((s) => !taken.includes(s));
+  const slot = free[Math.floor(Math.random() * free.length)];
+  const el = document.createElement("div");
+  el.className = "friend"; el.style.width = w + "px"; el.innerHTML = animalSVG(key);
+  api.stage.appendChild(el);
+  friends.push({ el, w, slot, x: 0.12 + slot * 0.19, face: Math.random() < 0.5 ? 1 : -1, t: 0, lift: api.height * (0.06 + Math.random() * 0.14) });
+  api.note(a.notes[0], { peak: 0.15, len: 1.2 });
+  api.note(a.notes[1], { when: 0.22, peak: 0.15, len: 1.2 });
+  api.note(a.notes[2], { when: 0.44, peak: 0.17, len: 1.8 });
+  api.hint("");
+}
+
+createGame({
+  name: "Surprise Friends",
+  intro: "Any movement brings a new animal friend onto the screen with its own little tune. Each one stays a while, then wanders off. There is no goal, just cause and effect.",
+  credit: 'Our own take on an idea from the free switch-accessible games at <a href="https://www.cerebralpalsycenter.com/games/">CerebralPalsyCenter.com</a>, rebuilt for camera control.',
+  background: "#3b9a57",
+  onStart(api) {
+    api.stage.innerHTML = '<div id="meadow"></div>';
+    friends = []; visits = 0; sinceLast = 9; order = [];
+    api.hint("Waiting for movement...");
+  },
+  onFrame(api, dt, now) {
+    sinceLast += dt;
+    if (api.active) addFriend(api);
+    for (let i = friends.length - 1; i >= 0; i--) {
+      const f = friends[i]; f.t += dt;
+      // rise up over 0.9 s, bob gently, then sink away over the last 1.2 s
+      const up = Math.min(1, f.t / 0.9), down = Math.max(0, (f.t - (STAY_S - 1.2)) / 1.2);
+      const ease = 1 - Math.pow(1 - up, 3);
+      const y = -(f.lift) * ease + (f.w * 0.9) * (1 - ease) + (f.w * 0.9 + f.lift) * down * down;
+      const bob = Math.sin(now / 420 + i) * 4 * ease * (1 - down);
+      f.el.style.transform = `translate(${f.x * api.width - f.w / 2}px, ${y + bob}px) scaleX(${f.face})`;
+      f.el.style.opacity = (1 - down).toFixed(3);
+      if (f.t > STAY_S) { f.el.remove(); friends.splice(i, 1); }
+    }
+  },
+  onAction(api) { addFriend(api); },
+  onPointer(api) { addFriend(api); },
+  summary: () => [{ n: visits, label: "friends came to visit" }]
+});
+window.__state = () => ({ visits, onScreen: friends.length });
+</script>
+</body>
+</html>

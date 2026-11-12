@@ -17,8 +17,15 @@ Free games built for disabled children to interact with a screen through movemen
 | --- | --- | --- |
 | <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/camera-toy/games/musical-colours/) | Movement fills the screen with slowly blending colour and gentle music |
 | <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/camera-toy/games/walking-animals/) | An animal walks towards the side the child looks at, and sleeps when their eyes close |
+| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://moeghaf.github.io/camera-toy/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own tune |
+| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://moeghaf.github.io/camera-toy/games/balloon-pop/) | Balloons float up and movement pops them, anywhere or on the side you move |
+| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://moeghaf.github.io/camera-toy/games/music-wall/) | Movement on one side of the screen lights that pad and plays its note |
 
 More to come.
+
+## Sources
+
+Surprise Friends, Balloon Pop and Music Wall are our own takes on ideas from the free switch-accessible games at [CerebralPalsyCenter.com](https://www.cerebralpalsycenter.com/games/). They are rebuilt with new code, art and sound so they can be played by movement through the camera.
 
 ## Collaborate
 
@@ -26,11 +33,11 @@ Want to work on this together? That would be great. Email [moeghaf@gmail.com](ma
 
 You could even try vibe coding a game yourself. It is very easy to do:
 
-1. Copy `games/musical-colours/` to a new folder under `games/`.
+1. Copy `games/surprise-friends/` to a new folder under `games/`. It is the shortest game.
 2. Ask an AI coding assistant to change what happens on movement.
 3. Add your game to the list on `index.html` and in this README.
 
-`shared/motion.js` detects movement and `shared/face.js` tracks head turns, eye direction and eye closing, for any game to use.
+`shared/kit.js` gives every game its settings screen, camera, timer and sound. `shared/motion.js` detects movement and `shared/face.js` tracks head turns, eye direction and eye closing.
 
 ## Gentle and private
 
