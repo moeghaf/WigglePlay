@@ -5,7 +5,7 @@
 
 Free games built for disabled children to interact with a screen through movement. Any movement in front of the camera brings up simple colour and sound.
 
-**Play:** https://moeghaf.github.io/camera-toy/
+**Play:** https://moeghaf.github.io/WigglePlay/
 
 ![Dark screen fills with colour on movement, blends between colours, then fades out](docs/demo.gif)
 
@@ -15,11 +15,11 @@ Free games built for disabled children to interact with a screen through movemen
 
 | | Game | What happens |
 | --- | --- | --- |
-| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/camera-toy/games/musical-colours/) | Movement fills the screen with slowly blending colour and gentle music |
-| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/camera-toy/games/walking-animals/) | An animal walks towards the side the child looks at, and sleeps when their eyes close |
-| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://moeghaf.github.io/camera-toy/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own tune |
-| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://moeghaf.github.io/camera-toy/games/balloon-pop/) | Balloons float up and movement pops them, anywhere or on the side you move |
-| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://moeghaf.github.io/camera-toy/games/music-wall/) | Movement on one side of the screen lights that pad and plays its note |
+| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/WigglePlay/games/musical-colours/) | Movement fills the screen with slowly blending colour and gentle music |
+| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/WigglePlay/games/walking-animals/) | An animal walks towards the side the child looks at, and sleeps when their eyes close |
+| <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://moeghaf.github.io/WigglePlay/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own tune |
+| <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://moeghaf.github.io/WigglePlay/games/balloon-pop/) | Balloons float up and movement pops them, anywhere or on the side you move |
+| <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://moeghaf.github.io/WigglePlay/games/music-wall/) | Movement on one side of the screen lights that pad and plays its note |
 
 More to come.
 
@@ -29,7 +29,7 @@ Surprise Friends, Balloon Pop and Music Wall are our own takes on ideas from the
 
 ## Collaborate
 
-Want to work on this together? That would be great. Email [moeghaf@gmail.com](mailto:moeghaf@gmail.com) or [open an issue](https://github.com/moeghaf/camera-toy/issues) to say hello, or to ask for a specific game to be built for your child.
+Want to work on this together? That would be great. Email [moeghaf@gmail.com](mailto:moeghaf@gmail.com) or [open an issue](https://github.com/moeghaf/WigglePlay/issues) to say hello, or to ask for a specific game to be built for your child.
 
 You could even try vibe coding a game yourself. It is very easy to do:
 
