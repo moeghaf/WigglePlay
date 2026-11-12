@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WigglePlay: free movement games for disabled children</title>
 <meta name="description" content="Free camera-based cause and effect games for disabled children. Any movement brings up gentle colour and sound. No touch or switches needed.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0b10">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <style>
@@ -24,6 +26,7 @@
   .games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding: 0; margin: 0; list-style: none; }
   @media (max-width: 900px) { .games { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 560px) { .games { grid-template-columns: 1fr; } }
+  .install { font: inherit; font-weight: 700; font-size: 1rem; padding: 12px 20px; border-radius: 12px; border: 2px solid #3ddc97; background: transparent; color: #3ddc97; cursor: pointer; }
   .group { color: #a9a9b8; margin: -6px 0 16px; max-width: 640px; }
   .card { display: flex; flex-direction: column; height: 100%; border-radius: 18px; overflow: hidden; background: #181822;
     border: 2px solid #2c2c3a; color: inherit; text-decoration: none; }
@@ -52,6 +55,8 @@
 <main>
   <h1><img src="assets/icon.svg" alt=""><span>Wiggle<span class="play">Play</span></span></h1>
   <p class="lead">Free games built for disabled children to play through movement. The camera watches, and the screen answers with gentle colour and sound. No touch, switches or controllers needed.</p>
+
+  <p id="installRow" hidden><button id="installBtn" class="install">Install WigglePlay as an app</button></p>
 
   <h2 id="games">First games</h2>
   <p class="group">Cause and effect. Any movement makes something happen, and nothing can go wrong.</p>
@@ -193,5 +198,18 @@
 
   <footer>Toys for supervised play, not medical devices. Code on <a href="https://github.com/moeghaf/WigglePlay">GitHub</a>.</footer>
 </main>
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
+// Chrome on Android offers installation through this event; the button shows only when it is available.
+var installEvent = null;
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault(); installEvent = e; document.getElementById("installRow").hidden = false;
+});
+document.getElementById("installBtn").addEventListener("click", function () {
+  if (!installEvent) return;
+  installEvent.prompt(); installEvent = null; document.getElementById("installRow").hidden = true;
+});
+window.addEventListener("appinstalled", function () { document.getElementById("installRow").hidden = true; });
+</script>
 </body>
 </html>

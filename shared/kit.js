@@ -328,6 +328,7 @@ export function createGame(cfg) {
   });
   window.__kit = () => ({ mode, score, cols: motion.cols.slice(), active: api.active, colsActive: api.cols.slice(), cursor: { x: cur.x, y: cur.y, seen: cur.seen }, targets: targets.length, hi, busy: api.busy });   // for automated checks
 
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register(new URL("../sw.js", import.meta.url)).catch(() => {});
   motion.start();
   requestAnimationFrame(loop);
   return api;

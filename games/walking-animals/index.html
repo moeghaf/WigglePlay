@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Walking Animals - WigglePlay</title>
 <meta name="description" content="Walking Animals: a camera game for disabled children. A friendly animal walks towards wherever the child looks.">
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0b0b10">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
 <style>
@@ -385,6 +387,7 @@ document.addEventListener("keyup", (e) => {
 });
 window.__game = () => ({ mode, x, dir, trips, asleep, present: face.present });   // for automated checks
 
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("../../sw.js").catch(function () {});
 startCamera();
 requestAnimationFrame(loop);
 $("startBtn").disabled = false;
