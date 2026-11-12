@@ -9,14 +9,14 @@ Free games built for disabled children to interact with a screen through movemen
 
 ![Dark screen fills with colour on movement, blends between colours, then fades out](docs/demo.gif)
 
-*Silent demo of Colours, captured with a simulated camera.*
+*Silent demo of Musical Colours, captured with a simulated camera.*
 
 ## Games
 
-| Game | What happens | Play |
+| | Game | What happens |
 | --- | --- | --- |
-| **Colours** | Movement fills the screen with slowly blending colour and gentle music | [Open](https://moeghaf.github.io/camera-toy/games/colours/) |
-| **Animal Walk** | An animal walks towards the side the child looks at, and sleeps when their eyes close | [Open](https://moeghaf.github.io/camera-toy/games/animal-walk/) |
+| <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://moeghaf.github.io/camera-toy/games/musical-colours/) | Movement fills the screen with slowly blending colour and gentle music |
+| <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://moeghaf.github.io/camera-toy/games/walking-animals/) | An animal walks towards the side the child looks at, and sleeps when their eyes close |
 
 More to come.
 
@@ -26,7 +26,7 @@ Want to work on this together? That would be great. Email [moeghaf@gmail.com](ma
 
 You could even try vibe coding a game yourself. It is very easy to do:
 
-1. Copy `games/colours/` to a new folder under `games/`.
+1. Copy `games/musical-colours/` to a new folder under `games/`.
 2. Ask an AI coding assistant to change what happens on movement.
 3. Add your game to the list on `index.html` and in this README.
 
