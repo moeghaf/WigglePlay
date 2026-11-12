@@ -18,6 +18,7 @@ Free games built for disabled children to interact with a screen through movemen
 | <img src="assets/screens/musical-colours.png" width="160" alt=""> | [**Musical Colours**](https://wiggleplay.org/games/musical-colours/) | Any movement fills the screen with slowly blending colour and soft music. |
 | <img src="assets/screens/surprise-friends.png" width="160" alt=""> | [**Surprise Friends**](https://wiggleplay.org/games/surprise-friends/) | Any movement brings a new animal friend onto the screen with its own little tune. |
 | <img src="assets/screens/balloon-pop.png" width="160" alt=""> | [**Balloon Pop**](https://wiggleplay.org/games/balloon-pop/) | Balloons float up the screen. Move to pop them, with a real pop and a shower of pieces. |
+| <img src="assets/screens/woodcutter.png" width="160" alt=""> | [**Woodcutter**](https://wiggleplay.org/games/woodcutter/) | Every movement swings the axe. Chop the tree down, pile up the logs and level up. |
 | <img src="assets/screens/music-wall.png" width="160" alt=""> | [**Music Wall**](https://wiggleplay.org/games/music-wall/) | Move on one side of the screen to light that pad and play its note. |
 | <img src="assets/screens/walking-animals.png" width="160" alt=""> | [**Walking Animals**](https://wiggleplay.org/games/walking-animals/) | Look left or right and a friendly animal walks that way. Close your eyes and it falls asleep. |
 | <img src="assets/screens/odd-one.png" width="160" alt=""> | [**Spot the Odd One**](https://wiggleplay.org/games/odd-one/) | Find the animal that is different from the others. |

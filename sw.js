@@ -1,7 +1,7 @@
 /* WigglePlay service worker: lets the games open without a connection once they have been visited.
    Pages and code are fetched fresh when online (so updates arrive straight away) and fall back to the
    saved copy when offline. The large face-tracking files are saved the first time they are used. */
-const VERSION = "wiggleplay-v2";
+const VERSION = "wiggleplay-v3";
 const CORE = [
   "./",
   "index.html",
@@ -29,6 +29,7 @@ const CORE = [
   "games/star-pictures/",
   "games/surprise-friends/",
   "games/walking-animals/",
+  "games/woodcutter/",
   "assets/screens/balloon-pop.png",
   "assets/screens/colour-squares.png",
   "assets/screens/copy-the-tune.png",
@@ -40,7 +41,8 @@ const CORE = [
   "assets/screens/shape-fit.png",
   "assets/screens/star-pictures.png",
   "assets/screens/surprise-friends.png",
-  "assets/screens/walking-animals.png"
+  "assets/screens/walking-animals.png",
+  "assets/screens/woodcutter.png"
 ];
 
 self.addEventListener("install", (event) => {
