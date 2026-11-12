@@ -1,11 +1,12 @@
 /* WigglePlay service worker: lets the games open without a connection once they have been visited.
    Pages and code are fetched fresh when online (so updates arrive straight away) and fall back to the
    saved copy when offline. The large face-tracking files are saved the first time they are used. */
-const VERSION = "wiggleplay-v1";
+const VERSION = "wiggleplay-v2";
 const CORE = [
   "./",
   "index.html",
   "manifest.webmanifest",
+  "privacy/",
   "shared/kit.js",
   "shared/kit.css",
   "shared/motion.js",

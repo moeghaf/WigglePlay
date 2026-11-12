@@ -53,3 +53,11 @@ You could even try vibe coding a game yourself. It is very easy to do:
 - Video stays on the device. Nothing is recorded or sent.
 
 These are toys for supervised play, not medical devices.
+
+## Privacy
+
+No accounts, adverts or tracking. See the [privacy page](https://wiggleplay.org/privacy/).
+
+## Licence
+
+The code and artwork are free to use under the [MIT licence](LICENSE). Two bundled parts keep their own licences: MediaPipe (Apache 2.0, see `shared/mediapipe/README.md`) and the Fredoka font (SIL Open Font License, see `assets/fredoka-OFL.txt`).
