@@ -3,334 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Camera Toy</title>
+<title>Camera Toy: free movement games for disabled children</title>
+<meta name="description" content="Free camera-based cause and effect games for disabled children. Any movement brings up gentle colour and sound. No touch or switches needed.">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: #0b0b10; color: #e8e8ee;
+  html, body { margin: 0; min-height: 100%; background: #0b0b10; color: #e8e8ee;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-  #setup { max-width: 760px; margin: 0 auto; padding: 24px 20px 40px; }
-  h1 { font-size: 1.5rem; margin: 0 0 4px; }
-  p.sub { margin: 0 0 18px; color: #a9a9b8; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
-  .camwrap { position: relative; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; }
-  video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
-  .zone { position: absolute; left: 15%; top: 10%; width: 70%; height: 80%;
-    border: 2px dashed rgba(255,255,255,.7); border-radius: 10px; pointer-events: none; }
-  .barwrap { position: relative; height: 18px; background: #23232e; border-radius: 9px; margin-top: 10px; overflow: hidden; }
-  .bar { height: 100%; width: 0; background: #6fcf97; }
-  .bar.over { background: #f2c94c; }
-  .mark { position: absolute; top: 0; bottom: 0; width: 3px; background: #fff; }
-  label { display: block; margin: 14px 0 6px; font-weight: 600; }
-  .hint { font-size: .85rem; color: #a9a9b8; margin-top: 4px; }
-  input[type=range] { width: 100%; }
-  select { width: 100%; padding: 8px; border-radius: 8px; background: #23232e; color: inherit; border: 1px solid #3a3a48; font-size: 1rem; }
-  .swatches { display: flex; gap: 10px; }
-  .sw { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; padding: 0; }
-  .sw[aria-pressed=true] { border-color: #fff; }
-  button.main { font-size: 1.1rem; font-weight: 700; padding: 14px 22px; border-radius: 12px; border: 0;
-    background: #6fcf97; color: #0b0b10; cursor: pointer; margin-top: 20px; width: 100%; }
-  button.ghost { font-size: .95rem; padding: 9px 14px; border-radius: 10px; border: 1px solid #55556a;
-    background: transparent; color: inherit; cursor: pointer; margin-top: 10px; }
-  #msg { margin-top: 12px; color: #f2c94c; min-height: 1.2em; }
-  #play { position: fixed; inset: 0; display: none; z-index: 10; background: #0b0b10; }
-  #pauseBtn { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
-    font-size: 1.3rem; font-weight: 700; padding: 18px 46px; border-radius: 16px;
-    border: 2px solid rgba(255,255,255,.6); background: rgba(0,0,0,.45); color: #fff; cursor: pointer; }
-  #status { position: fixed; top: 14px; left: 16px; font-size: .9rem; color: rgba(255,255,255,.65); }
-  #endBtn { position: fixed; top: 10px; right: 14px; margin: 0; background: rgba(0,0,0,.35); }
-  #miniwrap { position: fixed; left: 16px; right: 16px; bottom: 8px; height: 6px; margin: 0; opacity: .5; }
-  #summary { display: none; position: fixed; inset: 0; z-index: 20; background: #0b0b10; padding: 60px 20px; text-align: center; overflow: auto; }
-  #hint { position: fixed; left: 0; right: 0; top: 42%; text-align: center; font-size: 1.2rem; color: rgba(255,255,255,.55); transition: opacity 1.5s; pointer-events: none; }
-  #summary .n { font-size: 2.2rem; font-weight: 700; }
+  main { max-width: 760px; margin: 0 auto; padding: 36px 20px 48px; }
+  h1 { font-size: 1.9rem; margin: 0 0 8px; }
+  h2 { font-size: 1.15rem; margin: 36px 0 12px; }
+  p { line-height: 1.5; margin: 0 0 12px; }
+  .lead { color: #c5c5d2; font-size: 1.05rem; }
+  a { color: #8fd3ff; }
+  .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding: 0; margin: 0; list-style: none; }
+  .card { display: block; border-radius: 14px; overflow: hidden; background: #181822; border: 1px solid #2c2c3a;
+    color: inherit; text-decoration: none; }
+  .card:hover, .card:focus { border-color: #8fd3ff; }
+  .swatch { height: 110px; background: linear-gradient(90deg, #1b6f99, #1b9960, #99791b, #6a2b99, #994a1b); }
+  .card div.body { padding: 14px 16px 16px; }
+  .card h3 { margin: 0 0 6px; font-size: 1.15rem; }
+  .card p { margin: 0; color: #a9a9b8; font-size: .95rem; }
+  .soon { border-style: dashed; }
+  .soon .body { padding: 22px 16px; }
+  ul.plain { padding-left: 20px; margin: 0 0 12px; line-height: 1.6; }
+  footer { margin-top: 40px; color: #8c8c9c; font-size: .9rem; }
 </style>
 </head>
 <body>
-
-<div id="setup">
+<main>
   <h1>Camera Toy</h1>
-  <p class="sub">Any movement in the dashed box brings up gentle colour and music. Video stays on this device and is never saved.</p>
-  <div class="grid">
-    <div>
-      <div class="camwrap"><video id="video" autoplay playsinline muted></video><div class="zone"></div></div>
-      <div class="barwrap"><div class="bar" id="bar"></div><div class="mark" id="mark"></div></div>
-      <div class="hint">Green bar = movement now. White line = how much movement is needed.</div>
-      <button class="ghost" id="calBtn">Calibrate at rest (10 s)</button>
-      <div id="msg"></div>
-    </div>
-    <div>
-      <label for="sens">Movement needed</label>
-      <input type="range" id="sens" min="0" max="100" value="45">
-      <div class="hint">Left = tiny movements count. Right = bigger movements needed.</div>
+  <p class="lead">Free games built for disabled children to interact with a screen through movement. Any movement in front of the camera makes something happen. No touch, switches or controllers needed.</p>
 
-      <label>Colour</label>
-      <div class="swatches" id="swatches"></div>
-      <label style="font-weight:400;margin-top:10px"><input type="checkbox" id="alt" checked> Alternate colours (slow blend, new colour each response)</label>
+  <h2>Games</h2>
+  <ul class="games">
+    <li><a class="card" href="games/colours/">
+      <div class="swatch"></div>
+      <div class="body"><h3>Colours</h3><p>Move to fill the screen with slowly blending colour and gentle music.</p></div>
+    </a></li>
+    <li><div class="card soon"><div class="body"><h3>More coming</h3><p>Ask for a game for your child using the link below.</p></div></div></li>
+  </ul>
 
-      <label for="vol">Maximum volume</label>
-      <input type="range" id="vol" min="0" max="100" value="50">
+  <h2>Gentle and private</h2>
+  <ul class="plain">
+    <li>Colour and sound only fade and blend. Nothing flashes.</li>
+    <li>The adult sets the limits for brightness, volume and session length.</li>
+    <li>Video stays on your device. Nothing is recorded or sent.</li>
+  </ul>
 
-      <label for="bright">Maximum brightness</label>
-      <input type="range" id="bright" min="20" max="100" value="60">
+  <h2>Ask for a game, or build one</h2>
+  <p>Happy for collaborations! Feel free to <a href="https://github.com/moeghaf/camera-toy/issues">ask for a specific game</a> to be built for your child. You could even try vibe coding a game yourself. It is very easy to do.</p>
 
-      <label for="len">Session length</label>
-      <select id="len">
-        <option value="2">2 minutes</option>
-        <option value="3" selected>3 minutes</option>
-        <option value="5">5 minutes</option>
-        <option value="10">10 minutes</option>
-      </select>
-
-      <button class="main" id="startBtn">Start</button>
-      <div class="hint">Press Space at any time to pause.</div>
-    </div>
-  </div>
-</div>
-
-<div id="play">
-  <div id="status"></div>
-  <div id="hint">Waiting for movement...</div>
-  <button class="ghost" id="endBtn">End session</button>
-  <button id="pauseBtn">Pause</button>
-  <div class="barwrap" id="miniwrap"><div class="bar" id="bar2"></div><div class="mark" id="mark2"></div></div>
-</div>
-
-<div id="summary">
-  <h1>Session finished</h1>
-  <p><span class="n" id="sTrig">0</span><br>responses triggered</p>
-  <p><span class="n" id="sMove">0</span><br>seconds of movement</p>
-  <button class="main" id="againBtn">Back to settings</button>
-</div>
-
-<canvas id="work" width="64" height="48" hidden></canvas>
-
-<script>
-(function () {
-  "use strict";
-  var $ = function (id) { return document.getElementById(id); };
-  var video = $("video"), work = $("work"), wctx = work.getContext("2d", { willReadFrequently: true });
-  var W = 64, H = 48;
-  var ZX0 = Math.round(W * 0.15), ZX1 = Math.round(W * 0.85), ZY0 = Math.round(H * 0.10), ZY1 = Math.round(H * 0.90);
-  var PIXEL_DIFF = 18;          // grey-level change that counts as a changed pixel
-  var HOLD_S = 4;               // response stays on this long after the last movement
-  var RISE_S = 1.2;             // colour fade-in time (never faster)
-  var FALL_S = 3.0;             // colour fade-out time
-  var BAR_MAX = 12;             // % of pixels changed shown as a full bar
-
-  var HUES = [200, 150, 45, 280, 20];
-  var hueIdx = 0, curHue = HUES[0], targetHue = HUES[0], lastHueChange = 0;
-  var HUE_RATE = 45;            // degrees per second, so colour blends are always gradual
-  var HUE_EVERY_S = 6;          // while she keeps moving, blend to the next colour this often
-  function nextHue(now) {
-    hueIdx = (hueIdx + 1) % HUES.length; targetHue = HUES[hueIdx]; lastHueChange = now;
-    if (level < 0.05) curHue = targetHue;   // screen is dark, so no visible jump
-  }
-  var mode = "setup";           // setup | play | paused | done
-  var prev = null, score = 0, above = 0;
-  var level = 0, lastMove = -1e9, isOn = false;
-  var triggers = 0, moveSecs = 0, sessionEnd = 0, pausedLeft = 0;
-  var lastT = performance.now(), lastProc = 0;
-  var cal = null;
-  var audio = null;
-
-  // ---------- settings ----------
-  function threshold() {       // slider 0..100 -> 0.3% .. 10% of pixels, log scale
-    var t = $("sens").value / 100;
-    return 0.3 * Math.pow(10 / 0.3, t);
-  }
-  function setThreshold(pct) {
-    var t = Math.log(pct / 0.3) / Math.log(10 / 0.3);
-    $("sens").value = Math.round(Math.max(0, Math.min(1, t)) * 100);
-  }
-  HUES.forEach(function (h, i) {
-    var b = document.createElement("button");
-    b.className = "sw"; b.style.background = "hsl(" + h + " 70% 50%)";
-    b.setAttribute("aria-label", "Colour " + (i + 1));
-    b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-    b.onclick = function () {
-      hueIdx = i; targetHue = h; if (level < 0.05) curHue = h;
-      Array.prototype.forEach.call(document.querySelectorAll(".sw"), function (s) { s.setAttribute("aria-pressed", "false"); });
-      b.setAttribute("aria-pressed", "true");
-    };
-    $("swatches").appendChild(b);
-  });
-
-  // ---------- camera ----------
-  function startCamera() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      $("msg").textContent = "This browser cannot use the camera here. Open the file in Chrome or Edge.";
-      return;
-    }
-    navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false })
-      .then(function (stream) { video.srcObject = stream; })
-      .catch(function () { $("msg").textContent = "Camera blocked. Allow camera access for this page, then reload."; });
-  }
-
-  // ---------- movement ----------
-  function measure() {
-    if (video.readyState < 2) return;
-    wctx.drawImage(video, 0, 0, W, H);
-    var d = wctx.getImageData(0, 0, W, H).data;
-    var n = (ZX1 - ZX0) * (ZY1 - ZY0), g = new Float32Array(n), sum = 0, k = 0, x, y, i;
-    for (y = ZY0; y < ZY1; y++) for (x = ZX0; x < ZX1; x++) {
-      i = (y * W + x) * 4;
-      g[k] = 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]; sum += g[k]; k++;
-    }
-    // remove overall brightness so the screen's own glow does not count as movement
-    var mean = sum / n;
-    for (k = 0; k < n; k++) g[k] -= mean;
-    if (prev) {
-      var changed = 0;
-      for (k = 0; k < n; k++) if (Math.abs(g[k] - prev[k]) > PIXEL_DIFF) changed++;
-      var raw = 100 * changed / n;
-      score = 0.5 * score + 0.5 * raw;
-    }
-    prev = g;
-  }
-
-  // ---------- music (generated, no files) ----------
-  var NOTES = [196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
-  function initAudio() {
-    if (audio) { audio.ctx.resume(); return; }
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    var ctx = new AC();
-    var master = ctx.createGain(); master.gain.value = 0;
-    var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1600;
-    var delay = ctx.createDelay(1); delay.delayTime.value = 0.42;
-    var fb = ctx.createGain(); fb.gain.value = 0.3;
-    lp.connect(master); lp.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(master);
-    master.connect(ctx.destination);
-    [98.00, 146.83].forEach(function (f) {          // soft drone
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = "sine"; o.frequency.value = f; g.gain.value = 0.06; o.connect(g); g.connect(lp); o.start();
-    });
-    audio = { ctx: ctx, master: master, lp: lp, last: -1 };
-    setInterval(function () {
-      if (!isOn || mode !== "play") return;
-      var idx; do { idx = Math.floor(Math.random() * NOTES.length); } while (idx === audio.last);
-      audio.last = idx;
-      var t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = "triangle"; o.frequency.value = NOTES[idx];
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.16, t + 0.35);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 3.2);
-      o.connect(g); g.connect(lp); o.start(t); o.stop(t + 3.3);
-    }, 950);
-  }
-  function setMusic(on, fast) {
-    if (!audio) return;
-    var t = audio.ctx.currentTime, target = on ? 0.9 * ($("vol").value / 100) : 0;
-    audio.master.gain.cancelScheduledValues(t);
-    audio.master.gain.setTargetAtTime(target, t, on ? 0.35 : (fast ? 0.12 : 1.0));
-  }
-
-  // ---------- main loop ----------
-  function paint() {
-    var cap = $("bright").value / 100;
-    var light = 4 + level * cap * 52;
-    var sat = 12 + level * 58;
-    $("play").style.background = "hsl(" + curHue.toFixed(1) + " " + sat.toFixed(1) + "% " + light.toFixed(2) + "%)";
-  }
-  function bars() {
-    var thr = threshold(), w = Math.min(100, 100 * score / BAR_MAX), m = Math.min(100, 100 * thr / BAR_MAX);
-    ["bar", "bar2"].forEach(function (id) { $(id).style.width = w + "%"; $(id).classList.toggle("over", score > thr); });
-    $("mark").style.left = m + "%"; $("mark2").style.left = m + "%";
-  }
-  function loop(now) {
-    var dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
-    if (now - lastProc > 33) { lastProc = now; measure(); }
-    var thr = threshold();
-    above = score > thr ? above + 1 : 0;
-
-    if (cal) {
-      cal.max = Math.max(cal.max, score);
-      var left = Math.ceil((cal.end - now) / 1000);
-      if (left <= 0) {
-        setThreshold(Math.max(0.3, cal.max * 1.4 + 0.2));
-        $("msg").textContent = "Calibrated. Ask for a movement and check the bar passes the white line.";
-        cal = null;
-      } else { $("msg").textContent = "Measuring resting movement... " + left + " s"; }
-    }
-
-    if (mode === "play") {
-      if (above >= 3) { lastMove = now; moveSecs += dt; }
-      var on = (now - lastMove) / 1000 < HOLD_S;
-      if (on && !isOn) { triggers++; if ($("alt").checked && triggers > 1) nextHue(now); else lastHueChange = now; }
-      if (on && isOn && $("alt").checked && (now - lastHueChange) / 1000 > HUE_EVERY_S) nextHue(now);
-      if (on !== isOn) { isOn = on; setMusic(on, false); }
-      var left2 = Math.max(0, sessionEnd - now);
-      $("status").textContent = Math.floor(left2 / 60000) + ":" + ("0" + Math.floor(left2 / 1000) % 60).slice(-2) + " left";
-      if (left2 <= 0) finish();
-    }
-    var dh = ((targetHue - curHue + 540) % 360) - 180;      // shortest way round the colour wheel
-    var stepH = HUE_RATE * dt;
-    curHue = (Math.abs(dh) <= stepH) ? targetHue : (curHue + (dh > 0 ? stepH : -stepH) + 360) % 360;
-    var target = (mode === "play" && isOn) ? 1 : 0;
-    if (level < target) level = Math.min(target, level + dt / RISE_S);
-    else if (level > target) level = Math.max(target, level - dt / (mode === "play" ? FALL_S : 1.0));
-    $("hint").style.opacity = (mode === "play" && !isOn && level < 0.05) ? 1 : 0;
-    paint(); bars();
-    requestAnimationFrame(loop);
-  }
-
-  // ---------- keep the screen awake during a session ----------
-  var wake = null;
-  function keepAwake() {
-    if (!("wakeLock" in navigator)) return;
-    navigator.wakeLock.request("screen").then(function (w) { wake = w; }).catch(function () {});
-  }
-  function letSleep() {
-    if (wake) { try { wake.release(); } catch (e) {} wake = null; }
-  }
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible" && (mode === "play" || mode === "paused")) keepAwake();
-  });
-
-  // ---------- controls ----------
-  function start() {
-    initAudio();
-    keepAwake();
-    triggers = 0; moveSecs = 0; isOn = false; lastMove = -1e9; above = 0;
-    sessionEnd = performance.now() + (+$("len").value) * 60000;
-    mode = "play";
-    $("summary").style.display = "none"; $("play").style.display = "block";
-    document.body.style.overflow = "hidden"; window.scrollTo(0, 0);
-    if (video.paused) { var pp = video.play(); if (pp && pp.catch) pp.catch(function () {}); }
-    $("pauseBtn").textContent = "Pause";
-    try { var p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
-  }
-  function togglePause() {
-    if (mode === "play") {
-      mode = "paused"; pausedLeft = sessionEnd - performance.now();
-      isOn = false; setMusic(false, true);
-      $("pauseBtn").textContent = "Resume"; $("status").textContent = "Paused";
-    } else if (mode === "paused") {
-      sessionEnd = performance.now() + pausedLeft; lastMove = -1e9; above = 0;
-      mode = "play"; $("pauseBtn").textContent = "Pause";
-    }
-  }
-  function finish() {
-    mode = "done"; isOn = false; setMusic(false, false); letSleep();
-    setTimeout(function () {
-      if (mode !== "done") return;
-      $("play").style.display = "none"; $("summary").style.display = "block";
-      $("sTrig").textContent = triggers; $("sMove").textContent = Math.round(moveSecs);
-      try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {}
-    }, 3200);
-  }
-  $("startBtn").onclick = start;
-  $("pauseBtn").onclick = togglePause;
-  $("endBtn").onclick = function () { if (mode === "play" || mode === "paused") finish(); };
-  $("againBtn").onclick = function () { mode = "setup"; $("summary").style.display = "none"; document.body.style.overflow = ""; };
-  $("calBtn").onclick = function () { cal = { end: performance.now() + 10000, max: 0 }; };
-  document.addEventListener("keydown", function (e) {
-    if (e.code === "Space" && (mode === "play" || mode === "paused")) { e.preventDefault(); togglePause(); }
-  });
-
-  startCamera();
-  requestAnimationFrame(loop);
-})();
-</script>
+  <footer>Toys for supervised play, not medical devices. Code on <a href="https://github.com/moeghaf/camera-toy">GitHub</a>.</footer>
+</main>
 </body>
 </html>
