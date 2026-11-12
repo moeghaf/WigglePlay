@@ -1,4 +1,4 @@
-# Camera Toy
+# WigglePlay
 
 Free games built for disabled children to interact with a screen through movement. Any movement in front of the camera brings up simple colour and sound.
 
