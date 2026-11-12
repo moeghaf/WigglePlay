@@ -1,4 +1,7 @@
-# WigglePlay
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
+  <img src="assets/logo-light.png" alt="WigglePlay" width="360">
+</picture>
 
 Free games built for disabled children to interact with a screen through movement. Any movement in front of the camera brings up simple colour and sound.
 
